@@ -1,10 +1,8 @@
 package com.hufs_cheongwon.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.hufs_cheongwon.domain.enums.Role;
+import com.hufs_cheongwon.domain.enums.Status;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,10 +26,16 @@ public class Users extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String name;
 
     private String studentNumber;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Builder
     public Users(String email, String password, String name, String studentNumber) {
@@ -39,5 +43,9 @@ public class Users extends BaseTimeEntity {
         this.password = password;
         this.name = name;
         this.studentNumber = studentNumber;
+    }
+
+    public void setEncodedPassword(String password) {
+        this.password = password;
     }
 }
