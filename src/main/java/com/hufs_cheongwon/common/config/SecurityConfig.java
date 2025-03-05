@@ -27,6 +27,22 @@ public class SecurityConfig {
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        http
+                .csrf((auth) -> auth.disable())
+                .formLogin((auth) -> auth.disable())
+                .httpBasic((auth) -> auth.disable())
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http
+                .authorizeHttpRequests((auth) -> auth
+                        .anyRequest().permitAll());
+
+        return http.build();
+    }
 //
 //    @Bean
 //    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {

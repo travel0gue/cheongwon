@@ -21,6 +21,9 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 dependencies {
@@ -48,6 +51,9 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
     testImplementation 'org.mockito:mockito-core:5.9.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.9.0' // JUnit 5에서 Mockito 사용 시 필요
+
+    //univcert: 학교 이메일 인증
+    implementation 'com.github.in-seo:univcert:master-SNAPSHOT'
 }
 
 tasks.named('test') {
