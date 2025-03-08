@@ -5,7 +5,7 @@ import com.hufs_cheongwon.web.apiResponse.ApiResponse;
 import com.hufs_cheongwon.web.apiResponse.success.SuccessStatus;
 import com.hufs_cheongwon.web.dto.EmailCertifyRequest;
 import com.hufs_cheongwon.web.dto.EmailSendRequest;
-import com.hufs_cheongwon.web.dto.UserJoinRequest;
+import com.hufs_cheongwon.web.dto.LoginRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,18 +14,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.security.Key;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
 
     private final UsersService usersService;
 
     @PostMapping("/register")
-    public ApiResponse<Void> registerUser(@Valid @RequestBody UserJoinRequest request){
+    public ApiResponse<Void> registerUser(@Valid @RequestBody LoginRequest request){
         usersService.registerUser(request);
         return ApiResponse.onSuccess(SuccessStatus.SIGN_IN_SUCCESS, null);
     }

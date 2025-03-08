@@ -10,10 +10,16 @@ spring:
     properties:
       hibernate:
         #        show_sql: true
-        format_sql: true
+        format_sql: false
 logging.level:
   org.hibernate.SQL: debug
   org.hibernate.orm.jdbc.bind: trace
 
 univCert:
   key: 0288692f-0b20-472a-a582-0fd23f803d6c
+
+jwt:
+  secret: u9jN23kLso2P7q1aN7K72mH5sQ8J2XN9o3K7VtL+F2I=sdfjksaldfjksddjflskfjsfldksdfjsdf
+  accessExpiration: 3600000 #1시간
+  refreshExpiration: 86400000 #1일
+  emailExpiration: 600000 #10분

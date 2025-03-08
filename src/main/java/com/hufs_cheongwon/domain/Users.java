@@ -32,9 +32,6 @@ public class Users extends BaseTimeEntity {
     private String studentNumber;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
-
-    @Enumerated(EnumType.STRING)
     private Status status;
 
     @Builder
@@ -47,5 +44,9 @@ public class Users extends BaseTimeEntity {
 
     public void setEncodedPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isAdmin() {
+        return false;
     }
 }

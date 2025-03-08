@@ -8,7 +8,7 @@ import com.hufs_cheongwon.repository.UsersRepository;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import com.hufs_cheongwon.web.dto.EmailCertifyRequest;
 import com.hufs_cheongwon.web.dto.EmailSendRequest;
-import com.hufs_cheongwon.web.dto.UserJoinRequest;
+import com.hufs_cheongwon.web.dto.LoginRequest;
 import com.univcert.api.UnivCert;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,15 +21,14 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class UsersService {
 
     private final UsersRepository usersRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-
-
-    public void registerUser(UserJoinRequest request) {
+    @Transactional
+    public void registerUser(LoginRequest request) {
 
         String email = request.getEmail();
         String password = request.getPassword();
@@ -42,7 +41,6 @@ public class UsersService {
 
         Users user = Users.builder()
                 .email(email)
-                .role(Role.ROLE_USER)
                 .status(Status.ACTIVE)
                 .build();
 

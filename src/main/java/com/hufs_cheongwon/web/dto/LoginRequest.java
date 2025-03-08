@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserJoinRequest {
+public class LoginRequest {
 
     @Schema(
             description = "이메일",

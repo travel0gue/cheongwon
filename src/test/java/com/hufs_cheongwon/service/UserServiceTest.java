@@ -4,7 +4,7 @@ import com.hufs_cheongwon.common.exception.DuplicateResourceException;
 import com.hufs_cheongwon.domain.Users;
 import com.hufs_cheongwon.repository.UsersRepository;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
-import com.hufs_cheongwon.web.dto.UserJoinRequest;
+import com.hufs_cheongwon.web.dto.LoginRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,7 @@ public class UserServiceTest {
     public void 회원가입() throws Exception {
 
         // given
-        UserJoinRequest request = new UserJoinRequest("test@example.com", "password123");
+        LoginRequest request = new LoginRequest("test@example.com", "password123");
 
         when(usersRepository.existsByEmail(request.getEmail())).thenReturn(false); // 이메일 중복 없음
         when(bCryptPasswordEncoder.encode(request.getPassword())).thenReturn("encodedPassword123"); // 암호화된 비밀번호
@@ -54,7 +54,7 @@ public class UserServiceTest {
     @Test
     void 회원가입_이메일_중복_예외() {
         // given
-        UserJoinRequest request = new UserJoinRequest("test@example.com", "password1232!");
+        LoginRequest request = new LoginRequest("test@example.com", "password1232!");
 
         when(usersRepository.existsByEmail(request.getEmail())).thenReturn(true); // 이메일 중복 발생
 
