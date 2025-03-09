@@ -1,8 +1,9 @@
-package com.hufs_cheongwon.service;
+package com.hufs_cheongwon;
 
 import com.hufs_cheongwon.common.exception.DuplicateResourceException;
 import com.hufs_cheongwon.domain.Users;
 import com.hufs_cheongwon.repository.UsersRepository;
+import com.hufs_cheongwon.service.UsersService;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import com.hufs_cheongwon.web.dto.LoginRequest;
 import org.junit.jupiter.api.BeforeEach;
