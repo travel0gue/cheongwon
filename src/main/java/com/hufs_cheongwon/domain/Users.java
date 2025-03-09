@@ -46,7 +46,7 @@ public class Users extends BaseTimeEntity {
         this.password = password;
     }
 
-    public boolean isAdmin() {
-        return false;
+    public String getRole() {
+        return "ROLE_USER";
     }
 }

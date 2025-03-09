@@ -73,7 +73,7 @@ public class JwtAdminLoginFilter extends UsernamePasswordAuthenticationFilter {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("Strict")
-                .maxAge(Constant.COOKIE_EXPIRATION) // 14일(7 * 24 * 60 * 60)
+                .maxAge(Constant.REFRESH_COOKIE_EXPIRATION) // 14일(7 * 24 * 60 * 60)
                 .path("/")
                 .build();
 

@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/user/register","/user/code/**","/user/login","/admin/login").permitAll()
+                        .requestMatchers("/user/code/**","/user/login","/admin/login","/user/register").permitAll()
                         .requestMatchers("/petition/{petition_id}/agree", "/petition/{petition_id}/report", "/petition/new", "/user/logout").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll())

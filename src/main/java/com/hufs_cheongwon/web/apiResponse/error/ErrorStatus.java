@@ -31,7 +31,7 @@ public enum ErrorStatus {
     AUTH_CODE_INVALID(HttpStatus.BAD_REQUEST, StatusCode.USER.getCode(4011), "잘못된 인증 코드입니다."),
     TOKEN_INVALID(HttpStatus.BAD_REQUEST, StatusCode.USER.getCode(4012), "유효하지 않은 토큰입니다."),
     TOKEN_EXPIRATION(HttpStatus.BAD_REQUEST, StatusCode.USER.getCode(4013), "만료된 토큰입니다."),
-
+    EMAIL_UNCERTIFIED(HttpStatus.UNAUTHORIZED, StatusCode.USER.getCode(4014), "인증되지 않은 이메일입니다."),
 
     ADMIN_NOT_FOUND(HttpStatus.BAD_REQUEST, StatusCode.ADMIN.getCode(4001), "관리자 계정을 찾을 수 없습니다.")
     ;
