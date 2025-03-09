@@ -1,12 +1,8 @@
 package com.hufs_cheongwon.domain;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import com.hufs_cheongwon.domain.enums.Status;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -41,7 +37,8 @@ public class Users extends BaseTimeEntity {
 
     @Column
     @Setter
-    private String status;  //TODO: enum화 하기
+    @Enumerated(EnumType.STRING)
+    private Status status;  //TODO: enum화 하기
 
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Petition> petitions = new ArrayList<>();
@@ -58,7 +55,7 @@ public class Users extends BaseTimeEntity {
         this.password = password;
         this.name = name;
         this.studentNumber = studentNumber;
-        this.status = "Active";
+        this.status = Status.ACTIVE;
     }
 
     /**
