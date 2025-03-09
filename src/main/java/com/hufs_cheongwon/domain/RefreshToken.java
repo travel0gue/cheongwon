@@ -3,12 +3,14 @@ package com.hufs_cheongwon.domain;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class RefreshToken extends BaseTimeEntity {
 
     @Id
@@ -18,7 +20,7 @@ public class RefreshToken extends BaseTimeEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id")
-    private Users user;
+    private Users users;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")

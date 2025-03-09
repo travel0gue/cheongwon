@@ -6,7 +6,8 @@ public enum StatusCode {
     USER("USER"),
     ADMIN("ADMIN"),
     CATEGORY("CATEGORY"),
-    EMAIL("EMAIL");
+    EMAIL("EMAIL"),
+    ;
 
     private final String prefix;
 

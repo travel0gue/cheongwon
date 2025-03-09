@@ -38,7 +38,7 @@ public class Users extends BaseTimeEntity {
     @Column
     @Setter
     @Enumerated(EnumType.STRING)
-    private Status status;  //TODO: enum화 하기
+    private Status status;
 
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Petition> petitions = new ArrayList<>();
@@ -48,6 +48,9 @@ public class Users extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Report> reports = new ArrayList<>();
+
+    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
+    private RefreshToken refreshToken;
 
     @Builder
     public Users(String email, String password, String name, String studentNumber) {
