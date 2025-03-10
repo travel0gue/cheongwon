@@ -56,59 +56,29 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public LoginResponse reissueToken(String role, String oldRefreshToken) {
+    public LoginResponse reissueToken(String oldRefreshToken) {
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(oldRefreshToken)
                 .orElseThrow(() -> new UserNotFoundException(ErrorStatus.REFRESH_TOKEN_NOT_FOUND));
 
-        //토큰 인가 후 토큰 재발급
-        if (role.equals("ROLE_USER")) {
-            boolean isUserToken = refreshTokenRepository.isUserToken(refreshTokenEntity);
-            if (isUserToken) {
-                Users user = refreshTokenEntity.getUsers();
-                String newAccessToken = jwtUtil.createAccessToken(user.getEmail(), role);
-                String newRefreshToken = jwtUtil.createRefreshToken(user.getEmail(), role);
+        String role = refreshTokenEntity.getRole();
+        String email = refreshTokenEntity.getEmail();
 
-                // Refresh Token 교체
-                refreshTokenEntity.updateToken(newRefreshToken);
+        // 새로운 access token & refresh token 발급
+        String newAccessToken = jwtUtil.createAccessToken(email, role);
+        String newRefreshToken = jwtUtil.createRefreshToken(email, role);
 
-                TokenDto tokenDto = TokenDto.builder()
-                        .accessToken(newAccessToken)
-                        .refreshToken(newRefreshToken)
-                        .build();
-                return LoginResponse.builder()
-                        .authId(user.getId())
-                        .email(user.getEmail())
-                        .role(user.getRole())
-                        .tokenDto(tokenDto)
-                        .build();
-            } else {
-                throw new UserNotFoundException(ErrorStatus.USER_REFRESH_TOKEN_INVALID);
-            }
-        } else if (role.equals("ROLE_ADMIN")) {
-            boolean isAdminToken = refreshTokenRepository.isAdminToken(refreshTokenEntity);
-            if (isAdminToken) {
-                Admin admin = refreshTokenEntity.getAdmin();
-                String newAccessToken = jwtUtil.createAccessToken(admin.getEmail(), role);
-                String newRefreshToken = jwtUtil.createRefreshToken(admin.getEmail(), role);
+        // refresh token 교체
+        refreshTokenEntity.updateToken(newRefreshToken);
 
-                // Refresh Token 교체
-                refreshTokenEntity.updateToken(newRefreshToken);
-
-                TokenDto tokenDto = TokenDto.builder()
-                        .accessToken(newAccessToken)
-                        .refreshToken(newRefreshToken)
-                        .build();
-                return LoginResponse.builder()
-                        .authId(admin.getId())
-                        .email(admin.getEmail())
-                        .role(admin.getRole())
-                        .tokenDto(tokenDto)
-                        .build();
-            } else {
-                throw new UserNotFoundException(ErrorStatus.ADMIN_REFRESH_TOKEN_INVALID);
-            }
-        } else {
-            throw new UserNotFoundException(ErrorStatus.USER_REFRESH_TOKEN_INVALID);
-        }
+        TokenDto tokenDto = TokenDto.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
+        return LoginResponse.builder()
+                .authId(refreshTokenEntity.getId())
+                .email(email)
+                .role(role)
+                .tokenDto(tokenDto)
+                .build();
     }
 }

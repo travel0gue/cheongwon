@@ -63,7 +63,7 @@ public class UserController {
     public ApiResponse<LoginResponse> reissueUserToken(
             @CookieValue(name = "refresh_token") String refreshToken, HttpServletResponse response) throws IOException{
 
-        LoginResponse reissueResponse = refreshTokenService.reissueToken("ROLE_USER", refreshToken);
+        LoginResponse reissueResponse = refreshTokenService.reissueToken(refreshToken);
 
         // Refresh Token을 쿠키에 설정
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
@@ -76,5 +76,10 @@ public class UserController {
         response.setHeader("Set-Cookie", refreshTokenCookie.toString());
 
         return ApiResponse.onSuccess(SuccessStatus.REISSUE_TOKEN_SUCCESS, reissueResponse);
+    }
+
+    @GetMapping("/test")
+    public ApiResponse<Void> testAuthorization() {
+        return ApiResponse.onSuccess(SuccessStatus._OK, null);
     }
  }
