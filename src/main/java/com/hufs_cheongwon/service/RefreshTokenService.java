@@ -20,14 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.management.LockInfo;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
 
-    @Transactional
     public void saveRefreshToken(Users user, String refreshToken) {
 
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByUsers(user)
@@ -41,7 +40,6 @@ public class RefreshTokenService {
         refreshTokenRepository.save(refreshTokenEntity);
     }
 
-    @Transactional
     public void saveRefreshToken(Admin admin, String refreshToken) {
 
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByAdmin(admin)
@@ -55,7 +53,6 @@ public class RefreshTokenService {
         refreshTokenRepository.save(refreshTokenEntity);
     }
 
-    @Transactional
     public LoginResponse reissueToken(String oldRefreshToken) {
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(oldRefreshToken)
                 .orElseThrow(() -> new UserNotFoundException(ErrorStatus.REFRESH_TOKEN_NOT_FOUND));
@@ -67,7 +64,7 @@ public class RefreshTokenService {
         String newAccessToken = jwtUtil.createAccessToken(email, role);
         String newRefreshToken = jwtUtil.createRefreshToken(email, role);
 
-        // refresh token 교체
+        // refresh token 교체 (영속성 컨텍스트에서 관리)
         refreshTokenEntity.updateToken(newRefreshToken);
 
         TokenDto tokenDto = TokenDto.builder()
