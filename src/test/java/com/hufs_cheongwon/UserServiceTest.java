@@ -5,7 +5,7 @@ import com.hufs_cheongwon.domain.Users;
 import com.hufs_cheongwon.repository.UsersRepository;
 import com.hufs_cheongwon.service.UsersService;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
-import com.hufs_cheongwon.web.dto.LoginRequest;
+import com.hufs_cheongwon.web.dto.request.LoginRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
