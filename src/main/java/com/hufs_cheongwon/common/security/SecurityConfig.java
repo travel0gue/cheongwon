@@ -2,6 +2,7 @@ package com.hufs_cheongwon.common.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hufs_cheongwon.common.exception.AuthenticationException;
+import com.hufs_cheongwon.common.security.*;
 import com.hufs_cheongwon.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,8 +40,8 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/user/code/**","/user/login","/admin/login","/user/register").permitAll()
-                        .requestMatchers("/petitions/{petition_id}/agree", "/petitions/{petition_id}/report", "/petitions/new", "/user/logout").hasRole("USER")
+                        .requestMatchers("/admin/login","/admin/pwd").permitAll()
+                        .requestMatchers("/user/test","/petitions/{petition_id}/agree", "/petitions/{petition_id}/report", "/petitions/new", "/user/logout").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)

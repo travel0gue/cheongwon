@@ -22,7 +22,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class UsersService {
 
     private final UsersRepository usersRepository;
@@ -31,7 +31,6 @@ public class UsersService {
     private String univCertKey;
     private final String univName = "한국외국어대학교";
 
-    @Transactional
     public SignupResponse registerUser(LoginRequest request) throws IOException{
 
         String email = request.getEmail();
