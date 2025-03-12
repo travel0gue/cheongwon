@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/admin/login","/admin/pwd").permitAll()
-                        .requestMatchers("/user/test","/petition/{petition_id}/agree", "/petition/{petition_id}/report", "/petition/new", "/user/logout").hasRole("USER")
+                        .requestMatchers("/user/test","/petitions/{petition_id}/agree", "/petitions/{petition_id}/report", "/petitions/new", "/user/logout").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)

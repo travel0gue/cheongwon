@@ -7,17 +7,11 @@ import com.hufs_cheongwon.domain.RefreshToken;
 import com.hufs_cheongwon.domain.Users;
 import com.hufs_cheongwon.repository.RefreshTokenRepository;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
-import com.hufs_cheongwon.web.dto.LoginResponse;
+import com.hufs_cheongwon.web.dto.response.LoginResponse;
 import com.hufs_cheongwon.web.dto.TokenDto;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
-import org.antlr.v4.runtime.Token;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.lang.management.LockInfo;
 
 @Service
 @Transactional

@@ -1,4 +1,4 @@
-package com.hufs_cheongwon.domain;
+package com.hufs_cheongwon.domain.enums;
 
 public enum Category {
     ALL("전체"),

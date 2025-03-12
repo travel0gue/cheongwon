@@ -1,4 +1,4 @@
-package com.hufs_cheongwon.web.dto;
+package com.hufs_cheongwon.web.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;

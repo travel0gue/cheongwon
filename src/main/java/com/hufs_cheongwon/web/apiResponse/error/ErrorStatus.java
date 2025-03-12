@@ -1,5 +1,6 @@
 package com.hufs_cheongwon.web.apiResponse.error;
 
+import com.hufs_cheongwon.web.apiResponse.StatusCode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
