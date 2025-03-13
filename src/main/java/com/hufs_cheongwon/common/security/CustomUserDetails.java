@@ -1,10 +1,8 @@
 package com.hufs_cheongwon.common.security;
 
-import com.hufs_cheongwon.domain.Admin;
 import com.hufs_cheongwon.domain.Users;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

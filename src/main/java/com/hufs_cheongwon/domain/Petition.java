@@ -1,5 +1,7 @@
 package com.hufs_cheongwon.domain;
 
+import com.hufs_cheongwon.domain.enums.Category;
+import com.hufs_cheongwon.domain.enums.PetitionStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,13 +47,13 @@ public class Petition extends BaseTimeEntity{
     private PetitionStatus petitionStatus;
 
     @Column
-    private Integer agree_count = 0;
+    private Integer agreeCount = 0;
 
     @Column
-    private Integer view_count = 0;
+    private Integer viewCount = 0;
 
     @Column
-    private Integer report_count = 0;
+    private Integer reportCount = 0;
 
     //userId
     @ManyToOne(fetch = FetchType.LAZY)
@@ -78,13 +80,13 @@ public class Petition extends BaseTimeEntity{
      * 비즈니스 메소드
      */
     public void addAgreeCount(int count) {
-        this.agree_count += count;
+        this.agreeCount += count;
     }
     public void addViewCount(int count) {
-        this.view_count += count;
+        this.viewCount += count;
     }
     public void addReportCount(int count) {
-        this.report_count += count;
+        this.reportCount += count;
     }
 
     /**

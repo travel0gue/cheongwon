@@ -2,16 +2,15 @@ package com.hufs_cheongwon.service;
 
 import com.hufs_cheongwon.common.exception.DuplicateResourceException;
 import com.hufs_cheongwon.common.exception.UserNotFoundException;
-import com.hufs_cheongwon.common.security.JwtUtil;
-import com.hufs_cheongwon.domain.RefreshToken;
 import com.hufs_cheongwon.domain.Users;
-import com.hufs_cheongwon.domain.enums.Role;
 import com.hufs_cheongwon.domain.enums.Status;
 import com.hufs_cheongwon.repository.UsersRepository;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
-import com.hufs_cheongwon.web.dto.*;
+import com.hufs_cheongwon.web.dto.request.EmailCertifyRequest;
+import com.hufs_cheongwon.web.dto.request.EmailSendRequest;
+import com.hufs_cheongwon.web.dto.request.LoginRequest;
+import com.hufs_cheongwon.web.dto.response.SignupResponse;
 import com.univcert.api.UnivCert;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,7 +31,7 @@ public class UsersService {
 
     @Value("${univCert.key}")
     private String univCertKey;
-    private String univName = "한국외국어대학교";
+    private final String univName = "한국외국어대학교";
 
     public SignupResponse registerUser(LoginRequest request) throws IOException{
 

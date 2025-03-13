@@ -42,7 +42,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/admin/login","/admin/pwd","/user/test").permitAll()
-                        .requestMatchers("/petition/{petition_id}/agree", "/petition/{petition_id}/report", "/petition/new", "/user/logout", "/user/delete").hasRole("USER")
+                        .requestMatchers("/petitions/{petition_id}/agree", "/petitions/{petition_id}/report", "/petitions/new", "/user/logout", "/user/delete").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -54,7 +54,6 @@ public class SecurityConfig {
     }
 
     //CustomUserDetails 두 개 설정 -> 명시적으로 등록 해줘야 함
-    //사용자 로그인 필터
     @Bean
     public JwtUserLoginFilter jwtUserLoginFilter() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
@@ -71,7 +70,6 @@ public class SecurityConfig {
         return jwtUserLoginFilter;
     }
 
-    //관리자 로그인 필터
     @Bean
     public JwtAdminLoginFilter jwtAdminLoginFilter() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();

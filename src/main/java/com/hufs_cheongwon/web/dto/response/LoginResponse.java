@@ -1,5 +1,6 @@
-package com.hufs_cheongwon.web.dto;
+package com.hufs_cheongwon.web.dto.response;
 
+import com.hufs_cheongwon.web.dto.TokenDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 

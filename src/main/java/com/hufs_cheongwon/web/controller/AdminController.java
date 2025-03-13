@@ -1,7 +1,6 @@
 package com.hufs_cheongwon.web.controller;
 
 import com.hufs_cheongwon.common.security.CustomAdminDetails;
-import com.hufs_cheongwon.common.security.CustomUserDetails;
 import com.hufs_cheongwon.common.security.JwtUtil;
 import com.hufs_cheongwon.domain.Admin;
 import com.hufs_cheongwon.service.TokenService;

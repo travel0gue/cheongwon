@@ -1,21 +1,14 @@
 package com.hufs_cheongwon.common.security;
 
 import com.hufs_cheongwon.common.exception.UserNotFoundException;
-import com.hufs_cheongwon.common.security.CustomUserDetails;
-import com.hufs_cheongwon.domain.Admin;
 import com.hufs_cheongwon.domain.Users;
-import com.hufs_cheongwon.repository.AdminRepository;
 import com.hufs_cheongwon.repository.UsersRepository;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service

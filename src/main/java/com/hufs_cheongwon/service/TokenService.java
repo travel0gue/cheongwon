@@ -9,10 +9,9 @@ import com.hufs_cheongwon.domain.Users;
 import com.hufs_cheongwon.repository.BlackListRepository;
 import com.hufs_cheongwon.repository.RefreshTokenRepository;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
-import com.hufs_cheongwon.web.dto.LoginResponse;
+import com.hufs_cheongwon.web.dto.response.LoginResponse;
 import com.hufs_cheongwon.web.dto.TokenDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

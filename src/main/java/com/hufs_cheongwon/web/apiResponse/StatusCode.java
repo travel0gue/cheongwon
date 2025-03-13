@@ -1,4 +1,4 @@
-package com.hufs_cheongwon.web.apiResponse.error;
+package com.hufs_cheongwon.web.apiResponse;
 
 public enum StatusCode {
 
@@ -7,6 +7,7 @@ public enum StatusCode {
     ADMIN("ADMIN"),
     CATEGORY("CATEGORY"),
     EMAIL("EMAIL"),
+    PETITION("PETITION"),
     ;
 
     private final String prefix;
