@@ -28,6 +28,8 @@ public class UsersService {
 
     private final UsersRepository usersRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final TokenService tokenService;
+
     @Value("${univCert.key}")
     private String univCertKey;
     private String univName = "한국외국어대학교";
@@ -76,5 +78,13 @@ public class UsersService {
         Map<String, Object> response = UnivCert.certifyCode(univCertKey, email, univName, code);
 
         return response;
+    }
+
+    public void withdrawUser(String username, String token) {
+
+        // access token 블랙리스트 등록 & refresh token 삭제
+        tokenService.destroyToken(username, token);
+        // 디비에서 user 정보 삭제
+        usersRepository.deleteByEmail(username);
     }
 }

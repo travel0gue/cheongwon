@@ -2,8 +2,8 @@ package com.hufs_cheongwon.common.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hufs_cheongwon.common.exception.AuthenticationException;
-import com.hufs_cheongwon.common.security.*;
-import com.hufs_cheongwon.service.RefreshTokenService;
+import com.hufs_cheongwon.repository.BlackListRepository;
+import com.hufs_cheongwon.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -27,8 +27,9 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomAdminDetailsService customAdminDetailsService;
-    private final RefreshTokenService refreshTokenService;
+    private final TokenService tokenService;
     private final AuthenticationException authenticationException;
+    private final BlackListRepository blackListRepository;
 
     @Bean
     public SecurityFilterChain commonFilterChain(HttpSecurity http) throws Exception{
@@ -40,8 +41,8 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/admin/login","/admin/pwd").permitAll()
-                        .requestMatchers("/user/test","/petition/{petition_id}/agree", "/petition/{petition_id}/report", "/petition/new", "/user/logout").hasRole("USER")
+                        .requestMatchers("/admin/login","/admin/pwd","/user/test").permitAll()
+                        .requestMatchers("/petition/{petition_id}/agree", "/petition/{petition_id}/report", "/petition/new", "/user/logout", "/user/delete").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -53,6 +54,7 @@ public class SecurityConfig {
     }
 
     //CustomUserDetails 두 개 설정 -> 명시적으로 등록 해줘야 함
+    //사용자 로그인 필터
     @Bean
     public JwtUserLoginFilter jwtUserLoginFilter() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
@@ -63,12 +65,13 @@ public class SecurityConfig {
                 providerManager,
                 jwtUtil,
                 objectMapper,
-                refreshTokenService);
+                tokenService);
         jwtUserLoginFilter.setAuthenticationManager(providerManager);
         jwtUserLoginFilter.setFilterProcessesUrl("/user/login");
         return jwtUserLoginFilter;
     }
 
+    //관리자 로그인 필터
     @Bean
     public JwtAdminLoginFilter jwtAdminLoginFilter() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
@@ -79,7 +82,7 @@ public class SecurityConfig {
                 providerManager,
                 jwtUtil,
                 objectMapper,
-                refreshTokenService);
+                tokenService);
         jwtAdminLoginFilter.setAuthenticationManager(providerManager);
         jwtAdminLoginFilter.setFilterProcessesUrl("/admin/login");
         return jwtAdminLoginFilter;
@@ -95,6 +98,7 @@ public class SecurityConfig {
         return JwtAuthorizationFilter.builder()
                 .jwtUtil(jwtUtil)
                 .authenticationException(authenticationException)
+                .blackListRepository(blackListRepository)
                 .build();
     }
 }

@@ -34,6 +34,7 @@ public enum ErrorStatus {
     EMAIL_UNCERTIFIED(HttpStatus.UNAUTHORIZED, StatusCode.USER.getCode(4014), "인증되지 않은 이메일입니다."),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, StatusCode.USER.getCode(4015), "존재하지 않는 리프레쉬 토큰입니다."),
     COOKIE_EMPTY(HttpStatus.BAD_REQUEST, StatusCode.COMMON.getCode(4016), "쿠키가 비어있습니다."),
+    BLACK_LIST_TOKEN(HttpStatus.BAD_REQUEST, StatusCode.COMMON.getCode(4017), "블랙리스트에 등록된 토큰입니다."),
 
     ADMIN_NOT_FOUND(HttpStatus.BAD_REQUEST, StatusCode.ADMIN.getCode(4001), "관리자 계정을 찾을 수 없습니다."),
     ;
