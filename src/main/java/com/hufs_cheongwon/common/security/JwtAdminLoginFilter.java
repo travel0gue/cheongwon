@@ -5,7 +5,7 @@ import com.hufs_cheongwon.common.Constant;
 import com.hufs_cheongwon.common.exception.AuthenticationException;
 import com.hufs_cheongwon.common.exception.UserNotFoundException;
 import com.hufs_cheongwon.domain.Admin;
-import com.hufs_cheongwon.service.RefreshTokenService;
+import com.hufs_cheongwon.service.TokenService;
 import com.hufs_cheongwon.web.apiResponse.ApiResponse;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import com.hufs_cheongwon.web.apiResponse.success.SuccessStatus;
@@ -33,7 +33,7 @@ public class JwtAdminLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
-    private final RefreshTokenService refreshTokenService;
+    private final TokenService tokenService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -66,7 +66,7 @@ public class JwtAdminLoginFilter extends UsernamePasswordAuthenticationFilter {
         String refreshToken = jwtUtil.createRefreshToken(admin.getEmail(), "ROLE_ADMIN");
 
         // Refresh Token 저장
-        refreshTokenService.saveRefreshToken(admin, refreshToken);
+        tokenService.saveRefreshToken(admin, refreshToken);
 
         // Refresh Token을 쿠키에 설정
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)

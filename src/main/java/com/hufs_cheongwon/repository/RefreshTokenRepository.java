@@ -14,4 +14,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
     Optional<RefreshToken> findByAdmin(Admin admin);
 
     Optional<RefreshToken> findByToken(String refreshToken);
+    
+    long deleteByEmail(String email);
 }

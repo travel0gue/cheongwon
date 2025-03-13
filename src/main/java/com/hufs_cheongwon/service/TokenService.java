@@ -3,8 +3,10 @@ package com.hufs_cheongwon.service;
 import com.hufs_cheongwon.common.exception.UserNotFoundException;
 import com.hufs_cheongwon.common.security.JwtUtil;
 import com.hufs_cheongwon.domain.Admin;
+import com.hufs_cheongwon.domain.BlackList;
 import com.hufs_cheongwon.domain.RefreshToken;
 import com.hufs_cheongwon.domain.Users;
+import com.hufs_cheongwon.repository.BlackListRepository;
 import com.hufs_cheongwon.repository.RefreshTokenRepository;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import com.hufs_cheongwon.web.dto.response.LoginResponse;
@@ -13,13 +15,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class RefreshTokenService {
+public class TokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
+    private final BlackListRepository blackListRepository;
 
     public void saveRefreshToken(Users user, String refreshToken) {
 
@@ -27,6 +33,7 @@ public class RefreshTokenService {
                 .orElse(RefreshToken.builder()
                         .users(user)
                         .admin(null)
+                        .email(user.getEmail())
                         .token(refreshToken)
                         .build());
 
@@ -40,6 +47,7 @@ public class RefreshTokenService {
                 .orElse(RefreshToken.builder()
                         .users(null)
                         .admin(admin)
+                        .email(admin.getEmail())
                         .token(refreshToken)
                         .build());
 
@@ -71,5 +79,20 @@ public class RefreshTokenService {
                 .role(role)
                 .tokenDto(tokenDto)
                 .build();
+    }
+
+    public void destroyToken(String email, String token) {
+
+        //refresh 토큰 목록에서 삭제
+        refreshTokenRepository.deleteByEmail(email);
+
+        //access 토큰 블랙리스트에 등록
+        long expiration = Duration.between(Instant.now(), jwtUtil.getExpiresAtAsInstant(token)).toMinutes();
+        BlackList blackList = BlackList.builder()
+                .accessToken(token)
+                .expiration(expiration)
+                .build();
+
+        blackListRepository.save(blackList);
     }
 }
