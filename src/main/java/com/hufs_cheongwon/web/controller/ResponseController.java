@@ -5,11 +5,14 @@ import com.hufs_cheongwon.repository.ResponseRepository;
 import com.hufs_cheongwon.service.ResponseService;
 import com.hufs_cheongwon.web.apiResponse.ApiResponse;
 import com.hufs_cheongwon.web.apiResponse.success.SuccessStatus;
+import com.hufs_cheongwon.web.dto.response.AnswerResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/answers")
@@ -23,19 +26,16 @@ public class ResponseController {
      * 특정 답변 가져오기
      */
     @GetMapping("/{answer_id}")
-    public ApiResponse<Response> getResponseById(@PathVariable("answer_id") Long id) {
+    public ApiResponse<AnswerResponse> getResponseById(@PathVariable("answer_id") Long id) {
         return ApiResponse.onSuccess(SuccessStatus.PETITION_ANSWER_RETRIEVED, responseService.getResponseById(id));
     }
 
     /**
      * 해당 청원의 답변 가져오기
      */
-    @GetMapping("/{petition_id}")
-    public ApiResponse<Page<Response>> getResponsesByPetitionId(
-            @PathVariable("petition_id") Long id,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.onSuccess(SuccessStatus.PETITION_ANSWER_RETRIEVED, responseRepository.findByPetitionId(id, pageable));
+    @GetMapping("/petition/{petition_id}")
+    public ApiResponse<List<AnswerResponse>> getResponsesByPetitionId(
+            @PathVariable("petition_id") Long id) {
+        return ApiResponse.onSuccess(SuccessStatus.PETITION_ANSWER_RETRIEVED, responseService.getResponsesByPetitionId(id));
     }
 }

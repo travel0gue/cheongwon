@@ -8,9 +8,13 @@ import com.hufs_cheongwon.repository.AdminRepository;
 import com.hufs_cheongwon.repository.PetitionRepository;
 import com.hufs_cheongwon.repository.ResponseRepository;
 import com.hufs_cheongwon.web.dto.request.ResponseCreateRequest;
+import com.hufs_cheongwon.web.dto.response.AnswerResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -21,16 +25,32 @@ public class ResponseService {
     private final AdminRepository adminRepository;
     private final PetitionRepository petitionRepository;
 
-    public Response getResponseById(Long id) {
+    public AnswerResponse getResponseById(Long id) {
 
         Response response = responseRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 답변이 존재하지 않습니다. id= " + id));
 
-        return response;
+        return AnswerResponse.builder()
+                .answerId(response.getId())
+                .content(response.getContent())
+                .build();
     }
 
+    public List<AnswerResponse> getResponsesByPetitionId(Long petitionId) {
+        List<Response> responses = responseRepository.findByPetitionId(petitionId);
+        List<AnswerResponse> answerResponses = new ArrayList<>();
+        for(Response response : responses) {
+            answerResponses.add(AnswerResponse.builder()
+                            .answerId(response.getId())
+                            .content(response.getContent())
+                    .build());
+        }
+        return answerResponses;
+    }
+
+
     @Transactional
-    public Response createResponse(ResponseCreateRequest request, Long adminId, Long petitionId) {
+    public AnswerResponse createResponse(ResponseCreateRequest request, Long adminId, Long petitionId) {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new IllegalArgumentException("관리자를 찾을 수 없습니다. id: " + adminId));
 
@@ -45,22 +65,34 @@ public class ResponseService {
 
         petition.changePetitionStatus(PetitionStatus.ANSWER_COMPLETED);
 
-        return responseRepository.save(response);
+        responseRepository.save(response);
+
+        return AnswerResponse.builder()
+                .answerId(response.getId())
+                .content(response.getContent())
+                .build();
     }
 
     @Transactional
-    public Response deleteResponse(Long answerId) {
+    public AnswerResponse deleteResponse(Long answerId) {
         Response response = responseRepository.findById(answerId)
                 .orElseThrow(() -> new IllegalArgumentException("답변를 찾을 수 없습니다. id: " + answerId));
         responseRepository.deleteById(answerId);
-        return response;
+        return AnswerResponse.builder()
+                .answerId(response.getId())
+                .content(null)
+                .build();
     }
 
     @Transactional
-    public Response updateResponse(Long answerId, ResponseCreateRequest request) {
+    public AnswerResponse updateResponse(Long answerId, ResponseCreateRequest request) {
         Response response = responseRepository.findById(answerId)
                 .orElseThrow(() -> new IllegalArgumentException("답변를 찾을 수 없습니다. id: " + answerId));
         response.updateContent(request.getContent());
-        return responseRepository.save(response);
+        responseRepository.save(response);
+        return AnswerResponse.builder()
+                .answerId(response.getId())
+                .content(response.getContent())
+                .build();
     }
 }

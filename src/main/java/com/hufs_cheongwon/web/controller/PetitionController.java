@@ -33,8 +33,8 @@ public class PetitionController {
      */
     @GetMapping
     public ApiResponse<Page<Petition>> getPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED, petitionRepository.findAll(pageable));
@@ -45,8 +45,8 @@ public class PetitionController {
      */
     @GetMapping("/recent")
     public ApiResponse<Page<Petition>> getRecentPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         return ApiResponse.onSuccess(SuccessStatus.RECENT_PETITIONS_RETRIEVED, petitionRepository.findAllByOrderByCreatedAtDesc(pageable));
@@ -57,8 +57,8 @@ public class PetitionController {
      */
     @GetMapping("/popular")
     public ApiResponse<Page<Petition>> getPopularPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         return ApiResponse.onSuccess(SuccessStatus.POPULAR_PETITIONS_RETRIEVED, petitionRepository.findAllByOrderByAgreeCountDesc(pageable));
@@ -70,8 +70,8 @@ public class PetitionController {
     @GetMapping("/status/{status}")
     public ApiResponse<Page<Petition>> getPetitionsByStatus(
             @PathVariable PetitionStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED, petitionRepository.findByPetitionStatus(status, pageable));
@@ -103,8 +103,8 @@ public class PetitionController {
      */
     @GetMapping("/ongoing")
     public ApiResponse<Page<Petition>> getOngoingPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         return ApiResponse.onSuccess(SuccessStatus.ONGOING_PETITIONS_RETRIEVED, petitionRepository.findAllOngoingPetitions(pageable));
@@ -115,8 +115,8 @@ public class PetitionController {
      */
     @GetMapping("/expired")
     public ApiResponse<Page<Petition>> getExpiredPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         return ApiResponse.onSuccess(SuccessStatus.EXPIRED_PETITIONS_RETRIEVED, petitionRepository.findAllExpiredPetitions(pageable));
@@ -127,8 +127,8 @@ public class PetitionController {
      */
     @GetMapping("/waiting")
     public ApiResponse<Page<Petition>> getWaitingPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         return ApiResponse.onSuccess(SuccessStatus.WAITING_PETITIONS_RETRIEVED, petitionRepository.findAllWaitingPetitions(pageable));
@@ -139,8 +139,8 @@ public class PetitionController {
      */
     @GetMapping("/answered")
     public ApiResponse<Page<Petition>> getAnsweredPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         return ApiResponse.onSuccess(SuccessStatus.ANSWERED_PETITIONS_RETRIEVED, petitionRepository.findAllAnsweredPetitions(pageable));
