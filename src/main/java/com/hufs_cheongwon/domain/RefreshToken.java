@@ -29,6 +29,8 @@ public class RefreshToken extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String token;
 
+    private String email;
+
     public void updateToken(String token) {
         this.token = token;
     }
