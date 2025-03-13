@@ -88,7 +88,9 @@ public class Petition extends BaseTimeEntity{
     public void addReportCount(int count) {
         this.reportCount += count;
     }
-
+    public void changePetitionStatus(PetitionStatus newStatus) {
+        this.petitionStatus = newStatus;
+    }
     /**
      * 연관관계 메소드
      */

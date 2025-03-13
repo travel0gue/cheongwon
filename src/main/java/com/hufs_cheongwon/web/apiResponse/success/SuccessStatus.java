@@ -54,7 +54,9 @@ public enum SuccessStatus {
     ONGOING_PETITIONS_RETRIEVED(HttpStatus.OK, StatusCode.PETITION.getCode(2018), "진행 중인 청원 목록이 성공적으로 조회되었습니다."),
     EXPIRED_PETITIONS_RETRIEVED(HttpStatus.OK, StatusCode.PETITION.getCode(2019), "만료된 청원 목록이 성공적으로 조회되었습니다."),
     WAITING_PETITIONS_RETRIEVED(HttpStatus.OK, StatusCode.PETITION.getCode(2020), "대기 중인 청원 목록이 성공적으로 조회되었습니다."),
-    ANSWERED_PETITIONS_RETRIEVED(HttpStatus.OK, StatusCode.PETITION.getCode(2021), "답변된 청원 목록이 성공적으로 조회되었습니다.");
+    ANSWERED_PETITIONS_RETRIEVED(HttpStatus.OK, StatusCode.PETITION.getCode(2021), "답변된 청원 목록이 성공적으로 조회되었습니다."),
+    PETITION_ANSWER_RETRIEVED(HttpStatus.OK, StatusCode.PETITION.getCode(2022), "청원 답변이 성공적으로 조회되었습니다."),
+    ;
 
 
     private final HttpStatus httpStatus;

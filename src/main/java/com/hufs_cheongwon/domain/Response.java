@@ -1,12 +1,7 @@
 package com.hufs_cheongwon.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,10 +24,21 @@ public class Response extends BaseTimeEntity{
     @JoinColumn(name = "petition_id", nullable = false)
     private Petition petition;
 
+    @Column(nullable = false)
+    private String content;
+
     @Builder
-    public Response(Admin admin, Petition petition) {
+    public Response(Admin admin, Petition petition, String content) {
         this.admin = admin;
         admin.addResponse(this);
         this.petition = petition;
+        this.content = content;
+    }
+
+    /**
+     * 비즈니스 로직
+     */
+    public void updateContent(String newContent) {
+        this.content = newContent;
     }
 }
