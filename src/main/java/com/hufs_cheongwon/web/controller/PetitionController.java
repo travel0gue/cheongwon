@@ -79,7 +79,7 @@ public class PetitionController {
      */
     @GetMapping("/status/{status}")
     public ApiResponse<Page<PetitionResponse>> getPetitionsByStatus(
-            @PathVariable PetitionStatus status,
+            @PathVariable(name = "status") PetitionStatus status,
             @RequestParam(name = "page",defaultValue = "0") int page,
             @RequestParam(name = "size",defaultValue = "10") int size) {
 
@@ -93,8 +93,8 @@ public class PetitionController {
      * 특정 청원 상세 조회
      * 여기에 조회수 올리는 로직 추가하면 될 듯?
      */
-    @GetMapping("/{id}")
-    public ApiResponse<PetitionResponse> getPetitionById(@PathVariable Long id) {
+    @GetMapping("/{petition_id}")
+    public ApiResponse<PetitionResponse> getPetitionById(@PathVariable (name = "petition_id")Long id) {
         return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
                 PetitionResponse.from(petitionService.getPetitionById(id)));
     }
@@ -104,8 +104,8 @@ public class PetitionController {
      */
     @GetMapping("/search")
     public ApiResponse<List<PetitionResponse>> searchPetitions(
-            @RequestParam String keyword,
-            @RequestParam(required = false) PetitionStatus status) {
+            @RequestParam (name = "keyword")String keyword,
+            @RequestParam(required = false, name = "status") PetitionStatus status) {
 
         PetitionStatus searchStatus = (status != null) ? status : PetitionStatus.ONGOING;
         List<Petition> petitions = petitionRepository.searchPetitionsByKeywordAndStatus(keyword, searchStatus);

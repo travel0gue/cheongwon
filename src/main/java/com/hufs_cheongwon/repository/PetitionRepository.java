@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface PetitionRepository extends JpaRepository<Petition, Long> {
 
@@ -48,8 +49,8 @@ public interface PetitionRepository extends JpaRepository<Petition, Long> {
     }
 
     // 제목 또는 내용에 키워드가 포함된 청원 검색
-    @Query("SELECT p FROM Petition p WHERE (p.title LIKE %:keyword% OR p.content LIKE %:keyword%) AND p.petitionStatus = :petitionStatus")
-    List<Petition> searchPetitionsByKeywordAndStatus(String keyword, PetitionStatus petitionStatus);
+    @Query("SELECT p FROM Petition p WHERE (p.title LIKE CONCAT('%', :keyword, '%') OR p.content LIKE CONCAT('%', :keyword, '%')) AND (:status IS NULL OR p.petitionStatus = :status)")
+    List<Petition> searchPetitionsByKeywordAndStatus(@Param("keyword") String keyword, @Param("status") PetitionStatus status);
 
     // 최근 생성된 순으로 청원 조회
     Page<Petition> findAllByOrderByCreatedAtDesc(Pageable pageable);
