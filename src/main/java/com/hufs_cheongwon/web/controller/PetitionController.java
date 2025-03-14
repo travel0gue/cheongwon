@@ -10,6 +10,9 @@ import com.hufs_cheongwon.service.PetitionService;
 import com.hufs_cheongwon.web.apiResponse.ApiResponse;
 import com.hufs_cheongwon.web.apiResponse.success.SuccessStatus;
 import com.hufs_cheongwon.web.dto.request.PetitionCreateRequest;
+import com.hufs_cheongwon.web.dto.response.AgreementResponse;
+import com.hufs_cheongwon.web.dto.response.PetitionResponse;
+import com.hufs_cheongwon.web.dto.response.ReportResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -32,155 +36,177 @@ public class PetitionController {
      * 청원 목록 조회
      */
     @GetMapping
-    public ApiResponse<Page<Petition>> getPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ApiResponse<Page<PetitionResponse>> getPetitions(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED, petitionRepository.findAll(pageable));
+        Page<Petition> petitions = petitionRepository.findAll(pageable);
+        Page<PetitionResponse> petitionPage = petitions.map(PetitionResponse::from);
+        return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED, petitionPage);
     }
 
     /**
      * 최근 청원 목록 조회
      */
     @GetMapping("/recent")
-    public ApiResponse<Page<Petition>> getRecentPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ApiResponse<Page<PetitionResponse>> getRecentPetitions(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.onSuccess(SuccessStatus.RECENT_PETITIONS_RETRIEVED, petitionRepository.findAllByOrderByCreatedAtDesc(pageable));
+        Page<Petition> petitions = petitionRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<PetitionResponse> petitionPage = petitions.map(PetitionResponse::from);
+        return ApiResponse.onSuccess(SuccessStatus.RECENT_PETITIONS_RETRIEVED, petitionPage);
     }
 
     /**
      * 인기 청원 목록 조회 - 동의 수 기준
      */
     @GetMapping("/popular")
-    public ApiResponse<Page<Petition>> getPopularPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ApiResponse<Page<PetitionResponse>> getPopularPetitions(
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.onSuccess(SuccessStatus.POPULAR_PETITIONS_RETRIEVED, petitionRepository.findAllByOrderByAgreeCountDesc(pageable));
+        Page<Petition> petitions = petitionRepository.findAllByOrderByAgreeCountDesc(pageable);
+        Page<PetitionResponse> petitionPage = petitions.map(PetitionResponse::from);
+        return ApiResponse.onSuccess(SuccessStatus.POPULAR_PETITIONS_RETRIEVED, petitionPage);
     }
 
     /**
      * 상태별 청원 목록 조회
      */
     @GetMapping("/status/{status}")
-    public ApiResponse<Page<Petition>> getPetitionsByStatus(
-            @PathVariable PetitionStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ApiResponse<Page<PetitionResponse>> getPetitionsByStatus(
+            @PathVariable(name = "status") PetitionStatus status,
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED, petitionRepository.findByPetitionStatus(status, pageable));
+        Page<Petition> petitions = petitionRepository.findByPetitionStatus(status, pageable);
+        Page<PetitionResponse> petitionPage = petitions.map(PetitionResponse::from);
+        return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED, petitionPage);
     }
 
     /**
      * 특정 청원 상세 조회
      * 여기에 조회수 올리는 로직 추가하면 될 듯?
      */
-    @GetMapping("/{id}")
-    public ApiResponse<Petition> getPetitionById(@PathVariable Long id) {
-        return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED, petitionService.getPetitionById(id));
+    @GetMapping("/{petition_id}")
+    public ApiResponse<PetitionResponse> getPetitionById(@PathVariable (name = "petition_id")Long id) {
+        return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
+                PetitionResponse.from(petitionService.getPetitionById(id)));
     }
 
     /**
      * 키워드로 청원 검색
      */
     @GetMapping("/search")
-    public ApiResponse<List<Petition>> searchPetitions(
-            @RequestParam String keyword,
-            @RequestParam(required = false) PetitionStatus status) {
+    public ApiResponse<List<PetitionResponse>> searchPetitions(
+            @RequestParam (name = "keyword")String keyword,
+            @RequestParam(required = false, name = "status") PetitionStatus status) {
 
         PetitionStatus searchStatus = (status != null) ? status : PetitionStatus.ONGOING;
-        return ApiResponse.onSuccess(SuccessStatus.PETITION_SEARCH_SUCCESS, petitionRepository.searchPetitionsByKeywordAndStatus(keyword, searchStatus));
+        List<Petition> petitions = petitionRepository.searchPetitionsByKeywordAndStatus(keyword, searchStatus);
+        List<PetitionResponse> petitionResponses = new ArrayList<>();
+        for (Petition petition : petitions) {
+            petitionResponses.add(PetitionResponse.from(petition));
+        }
+        return ApiResponse.onSuccess(SuccessStatus.PETITION_SEARCH_SUCCESS, petitionResponses);
     }
 
     /**
      * 진행 중인 청원 목록 조회
      */
     @GetMapping("/ongoing")
-    public ApiResponse<Page<Petition>> getOngoingPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ApiResponse<Page<PetitionResponse>> getOngoingPetitions(
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.onSuccess(SuccessStatus.ONGOING_PETITIONS_RETRIEVED, petitionRepository.findAllOngoingPetitions(pageable));
+        Page<Petition> petitions = petitionRepository.findAllOngoingPetitions(pageable);
+        Page<PetitionResponse> petitionPage = petitions.map(PetitionResponse::from);
+        return ApiResponse.onSuccess(SuccessStatus.ONGOING_PETITIONS_RETRIEVED, petitionPage);
     }
 
     /**
      * 만료된 청원 목록 조회
      */
     @GetMapping("/expired")
-    public ApiResponse<Page<Petition>> getExpiredPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ApiResponse<Page<PetitionResponse>> getExpiredPetitions(
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.onSuccess(SuccessStatus.EXPIRED_PETITIONS_RETRIEVED, petitionRepository.findAllExpiredPetitions(pageable));
+        Page<Petition> petitions = petitionRepository.findAllExpiredPetitions(pageable);
+        Page<PetitionResponse> petitionPage = petitions.map(PetitionResponse::from);
+        return ApiResponse.onSuccess(SuccessStatus.EXPIRED_PETITIONS_RETRIEVED, petitionPage);
     }
 
     /**
      * 대기 중인 청원 목록 조회
      */
     @GetMapping("/waiting")
-    public ApiResponse<Page<Petition>> getWaitingPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ApiResponse<Page<PetitionResponse>> getWaitingPetitions(
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.onSuccess(SuccessStatus.WAITING_PETITIONS_RETRIEVED, petitionRepository.findAllWaitingPetitions(pageable));
+        Page<Petition> petitions = petitionRepository.findAllWaitingPetitions(pageable);
+        Page<PetitionResponse> petitionPage = petitions.map(PetitionResponse::from);
+        return ApiResponse.onSuccess(SuccessStatus.WAITING_PETITIONS_RETRIEVED, petitionPage);
     }
 
     /**
      * 답변 완료된 청원 목록 조회
      */
     @GetMapping("/answered")
-    public ApiResponse<Page<Petition>> getAnsweredPetitions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ApiResponse<Page<PetitionResponse>> getAnsweredPetitions(
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.onSuccess(SuccessStatus.ANSWERED_PETITIONS_RETRIEVED, petitionRepository.findAllAnsweredPetitions(pageable));
+        Page<Petition> petitions = petitionRepository.findAllAnsweredPetitions(pageable);
+        Page<PetitionResponse> petitionPage = petitions.map(PetitionResponse::from);
+        return ApiResponse.onSuccess(SuccessStatus.ANSWERED_PETITIONS_RETRIEVED, petitionPage);
     }
 
     /**
      * 청원 등록
      */
     @PostMapping("/new")
-    public ApiResponse<Petition> createPetition(
+    public ApiResponse<PetitionResponse> createPetition(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @Valid @RequestBody PetitionCreateRequest petitionCreateRequest
     ) {
         return ApiResponse.onSuccess(
-                SuccessStatus.PETITION_CREATED, petitionService.createPetition(
+                SuccessStatus.PETITION_CREATED, PetitionResponse.from(petitionService.createPetition(
                         petitionCreateRequest, customUserDetails.getUser().getId()
-                ));
+                )));
     }
 
     /**
      * 청원 동의
      */
     @PostMapping("/{petition_id}/agree")
-    public ApiResponse<Agreement> agreePetition(
+    public ApiResponse<AgreementResponse> agreePetition(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable("petition_id") Long petitionId
     ){
         Agreement agreement = petitionService.agreePetition(petitionId, customUserDetails.getUser().getId());
-        return ApiResponse.onSuccess(SuccessStatus.PETITION_AGREE_SUCCESS, agreement);
+        return ApiResponse.onSuccess(SuccessStatus.PETITION_AGREE_SUCCESS, AgreementResponse.from(agreement));
     }
 
     /**
      * 청원 신고
      */
     @PostMapping("/{petition_id}/report")
-    public ApiResponse<Report> reportPetition(
+    public ApiResponse<ReportResponse> reportPetition(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable("petition_id") Long petitionId
     ){
         Report report = petitionService.reportPetition(petitionId, customUserDetails.getUser().getId());
-        return ApiResponse.onSuccess(SuccessStatus.PETITION_REPORTED, report);
+        return ApiResponse.onSuccess(SuccessStatus.PETITION_REPORTED, ReportResponse.from(report));
     }
 }

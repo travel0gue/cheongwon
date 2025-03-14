@@ -35,6 +35,12 @@ public class UserController {
     private final TokenService tokenService;
     private final JwtUtil jwtUtil;
 
+    //스웨거 문서화 용 (스웨거에서 /user/login으로 요청을 보내도 컨트롤러로 들어오지 않고 jwtUserLoginFilter가 가로채서 로그인을 진행합니다.)
+    @PostMapping("/login")
+    public ApiResponse<LoginResponse> loginAdmin(@RequestBody LoginRequest request){
+        return ApiResponse.onSuccess(SuccessStatus.USER_LOGIN_SUCCESS, null);
+    }
+
     /**
      * 회원가입
      */

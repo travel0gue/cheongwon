@@ -4,7 +4,9 @@ import com.hufs_cheongwon.common.exception.AuthenticationException;
 import com.hufs_cheongwon.common.exception.UserNotFoundException;
 import com.hufs_cheongwon.domain.Admin;
 import com.hufs_cheongwon.domain.Users;
+import com.hufs_cheongwon.repository.AdminRepository;
 import com.hufs_cheongwon.repository.BlackListRepository;
+import com.hufs_cheongwon.repository.UsersRepository;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -21,6 +23,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Builder
@@ -30,6 +33,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final AuthenticationException authenticationException;
     private final BlackListRepository blackListRepository;
+    private final UsersRepository usersRepository;
+    private final AdminRepository adminRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -62,22 +67,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             if (role.equals("ROLE_USER")) {
 
                 SecurityContextHolder.clearContext();
-                Users user = Users.builder()
-                        .email(username)
-                        .password("temppassword")
-                        .build();
-                CustomUserDetails customUserDetails = CustomUserDetails.from(user);
+                Optional<Users> user = usersRepository.findByEmail(username);
+                CustomUserDetails customUserDetails = CustomUserDetails.from(user.get());
                 Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authToken);
                 filterChain.doFilter(request, response);
             } else if (role.equals("ROLE_ADMIN")) {
 
                 SecurityContextHolder.clearContext();
-                Admin admin = Admin.builder()
-                        .email(username)
-                        .password("temppassword")
-                        .build();
-                CustomAdminDetails customAdminDetails = CustomAdminDetails.from(admin);
+                Optional<Admin> admin = adminRepository.findByEmail(username);
+                CustomAdminDetails customAdminDetails = CustomAdminDetails.from(admin.get());
                 Authentication authToken = new UsernamePasswordAuthenticationToken(customAdminDetails, null, customAdminDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 

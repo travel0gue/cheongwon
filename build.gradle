@@ -55,6 +55,9 @@ dependencies {
 
     //univcert: 학교 이메일 인증
     implementation 'com.github.in-seo:univcert:master-SNAPSHOT'
+
+    // Mysql
+    implementation 'com.mysql:mysql-connector-j'
 }
 
 tasks.named('test') {

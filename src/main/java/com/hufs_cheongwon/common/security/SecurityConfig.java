@@ -2,7 +2,9 @@ package com.hufs_cheongwon.common.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hufs_cheongwon.common.exception.AuthenticationException;
+import com.hufs_cheongwon.repository.AdminRepository;
 import com.hufs_cheongwon.repository.BlackListRepository;
+import com.hufs_cheongwon.repository.UsersRepository;
 import com.hufs_cheongwon.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,8 @@ public class SecurityConfig {
     private final TokenService tokenService;
     private final AuthenticationException authenticationException;
     private final BlackListRepository blackListRepository;
+    private final UsersRepository usersRepository;
+    private final AdminRepository adminRepository;
 
     @Bean
     public SecurityFilterChain commonFilterChain(HttpSecurity http) throws Exception{
@@ -97,6 +101,8 @@ public class SecurityConfig {
                 .jwtUtil(jwtUtil)
                 .authenticationException(authenticationException)
                 .blackListRepository(blackListRepository)
+                .usersRepository(usersRepository)
+                .adminRepository(adminRepository)
                 .build();
     }
 }
