@@ -13,14 +13,14 @@ public class AnswerResponse {
 
     private Long answerId;
     private String content;
-    private AdminInfo adminInfo;
+    private WriterAdminInfo writerAdminInfo;
 
     @Schema(description = "관리자 정보 DTO")
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor
     @Builder
-    public static class AdminInfo {
+    public static class WriterAdminInfo {
         private Long adminId;
         private String departure;
         private String role;
@@ -33,7 +33,7 @@ public class AnswerResponse {
         return AnswerResponse.builder()
                 .answerId(answerId)
                 .content(content)
-                .adminInfo(AdminInfo.builder()
+                .writerAdminInfo(WriterAdminInfo.builder()
                         .adminId(admin.getId())
                         .departure(admin.getDeparture())
                         .role(admin.getRole())
