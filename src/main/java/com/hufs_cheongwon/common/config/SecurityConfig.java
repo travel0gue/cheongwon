@@ -1,7 +1,8 @@
-package com.hufs_cheongwon.common.security;
+package com.hufs_cheongwon.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hufs_cheongwon.common.exception.AuthenticationException;
+import com.hufs_cheongwon.common.security.*;
 import com.hufs_cheongwon.repository.AdminRepository;
 import com.hufs_cheongwon.repository.BlackListRepository;
 import com.hufs_cheongwon.repository.UsersRepository;
@@ -18,6 +19,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -39,6 +45,7 @@ public class SecurityConfig {
     public SecurityFilterChain commonFilterChain(HttpSecurity http) throws Exception{
         //csrf, Form 로그인 방식, http basic 인증 방식 disable (세션 방식이 아닌 jwt 방식 로그인을 사용하기 때문)
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf((auth) -> auth.disable())
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
@@ -104,5 +111,22 @@ public class SecurityConfig {
                 .usersRepository(usersRepository)
                 .adminRepository(adminRepository)
                 .build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:5173",
+                "https://hufs-petition.vercel.app"
+        ));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("Set-Cookie"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
