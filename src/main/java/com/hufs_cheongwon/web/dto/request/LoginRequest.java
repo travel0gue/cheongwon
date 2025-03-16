@@ -15,7 +15,7 @@ public class LoginRequest {
 
     @Schema(
             description = "이메일",
-            example = "user@example.com"
+            example = "chldbstj0219@hufs.ac.kr"
     )
     @NotNull(message = "이메일은 필수입니다")
     @Email

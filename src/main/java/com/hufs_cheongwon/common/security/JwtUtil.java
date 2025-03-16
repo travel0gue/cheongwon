@@ -22,6 +22,7 @@ public class JwtUtil {
     private final SecretKey secretKey;
     private final long accessTokenValidityInMilliseconds;
     private final long refreshTokenValidityInMilliseconds;
+    private final long emailTokenValidityInMilliseconds;
 
     public JwtUtil(
             // secret key
@@ -29,11 +30,14 @@ public class JwtUtil {
             // access token 유효 시간
             @Value("${jwt.accessExpiration}") final long accessTokenValidityInMilliseconds,
             // refresh token 유효 시간
-            @Value("${jwt.refreshExpiration}") final long refreshTokenValidityInMilliseconds
+            @Value("${jwt.refreshExpiration}") final long refreshTokenValidityInMilliseconds,
+            // email token 유효 시간
+            @Value("${jwt.emailExpiration}") final long emailTokenValidityInMilliseconds
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.accessTokenValidityInMilliseconds = accessTokenValidityInMilliseconds;
         this.refreshTokenValidityInMilliseconds = refreshTokenValidityInMilliseconds;
+        this.emailTokenValidityInMilliseconds = emailTokenValidityInMilliseconds;
     }
 
     //access token 생성
@@ -44,6 +48,11 @@ public class JwtUtil {
     // refresh token 생성
     public String createRefreshToken(String subject, String role) {
         return createJwt(subject, role, refreshTokenValidityInMilliseconds);
+    }
+
+    //email token 생성
+    public String createEmailToken(String subject) {
+        return createJwt(subject, "ROLE_EMAIL", emailTokenValidityInMilliseconds);
     }
 
     public String createJwt(String username, String role, Long expiredMs) {

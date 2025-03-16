@@ -10,15 +10,19 @@ import com.hufs_cheongwon.web.dto.request.EmailCertifyRequest;
 import com.hufs_cheongwon.web.dto.request.EmailSendRequest;
 import com.hufs_cheongwon.web.dto.request.LoginRequest;
 import com.hufs_cheongwon.web.dto.response.SignupResponse;
-import com.univcert.api.UnivCert;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.io.IOException;
-import java.util.Map;
+import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -28,55 +32,84 @@ public class UsersService {
     private final UsersRepository usersRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final TokenService tokenService;
+    private final JavaMailSender javaMailSender;
+    private final TemplateEngine templateEngine;
+    private final CacheService cacheService;
 
-    @Value("${univCert.key}")
-    private String univCertKey;
-    private final String univName = "한국외국어대학교";
-
-    public SignupResponse registerUser(LoginRequest request) throws IOException{
+    public SignupResponse registerUser(LoginRequest request, String tokenEmail) throws IOException{
 
         String email = request.getEmail();
         String password = request.getPassword();
 
-        //존재하는 이메일인지 확인
+        // 존재하는 이메일인지 확인
         Boolean isExist = usersRepository.existsByEmail(email);
         if (isExist){
             throw new DuplicateResourceException(ErrorStatus.EMAIL_DUPLICATED);
         }
-
-        //인증된 이메일인지 확인
-        Map<String, Object> univResponse = UnivCert.status(univCertKey, email);
-        boolean isCertifiedEmail = (boolean) univResponse.get("success");
-        if (isCertifiedEmail) {
-            Users newUser = Users.builder()
-                    .email(email)
-                    .status(Status.ACTIVE)
-                    .build();
-            newUser.setEncodedPassword(bCryptPasswordEncoder.encode(password));
-            Users user = usersRepository.save(newUser);
-
-            return SignupResponse.builder()
-                    .userId(user.getId())
-                    .role(user.getRole())
-                    .email(user.getEmail())
-                    .build();
-        } else {
+        System.out.println(tokenEmail+email);
+        // 인증된 이메일인지 확인
+        if (!tokenEmail.equals(email)) {
             throw new UserNotFoundException(ErrorStatus.EMAIL_UNCERTIFIED);
+        }
+
+        Users newUser = Users.builder()
+                .email(email)
+                .status(Status.ACTIVE)
+                .build();
+        newUser.setEncodedPassword(bCryptPasswordEncoder.encode(password));
+        Users user = usersRepository.save(newUser);
+
+        return SignupResponse.builder()
+                .userId(user.getId())
+                .role(user.getRole())
+                .email(user.getEmail())
+                .build();
+    }
+
+    @Cacheable("MyCache")
+    public void sendEmailCode(EmailSendRequest request) {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        String email = request.getEmail();
+        if (!email.endsWith("@hufs.ac.kr")) {
+            throw new UserNotFoundException(ErrorStatus.EMAIL_NOT_SCHOOL);
+        }
+        try {
+            String code = generateAuthCode();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+
+            // 메일을 받을 수신자 설정
+            mimeMessageHelper.setTo(email);
+            // 메일 제목 설정
+            mimeMessageHelper.setSubject("외대 청원 인증번호 발송");
+            // html 본문 설정
+            Context context = new Context();
+            context.setVariable("content", "인증번호: "+code);
+            String htmlContent = templateEngine.process("email-template", context);
+            // 메일 본문 설정
+            mimeMessageHelper.setText(htmlContent, true);
+            // 메일 발송
+            javaMailSender.send(mimeMessage);
+            // 이메일, 인증번호 저장
+            cacheService.saveEmailCode(email, code);
+            System.out.println(code);
+        } catch (Exception e) {
+            throw new UserNotFoundException(ErrorStatus.AUTH_CODE_SEND_FAIL);
         }
     }
 
-    public Map<String, Object> sendEmailCode(EmailSendRequest request) throws IOException {
+    @Cacheable("MyCache")
+    public void certifyEmailCode(EmailCertifyRequest request) {
         String email = request.getEmail();
-        return UnivCert.certify(univCertKey, email, univName, true);
-    }
-
-    public Map<String, Object> certifyEmailCode(EmailCertifyRequest request) throws IOException {
-        String email = request.getEmail();
-        Integer code = request.getCode();
-
-        Map<String, Object> response = UnivCert.certifyCode(univCertKey, email, univName, code);
-
-        return response;
+        String code = request.getCode();
+        System.out.println(code);
+        String validCode = cacheService.getEmailCode(email);
+        if (validCode == null) {
+            throw new UserNotFoundException(ErrorStatus.AUTH_CODE_NOT_RECEIVED);
+        } else if (!validCode.equals(code)) {
+            throw new UserNotFoundException(ErrorStatus.AUTH_CODE_INVALID);
+        }
+        // 코드가 일치하면 캐시에서 삭제
+        cacheService.evictEmailCode(email);
     }
 
     public void withdrawUser(String username, String token) {
@@ -85,5 +118,16 @@ public class UsersService {
         tokenService.destroyToken(username, token);
         // 디비에서 user 정보 삭제
         usersRepository.deleteByEmail(username);
+    }
+
+    private String generateAuthCode() {
+        SecureRandom secureRandom = new SecureRandom();
+        StringBuilder authCode = new StringBuilder();
+
+        for (int i = 0; i < 5; i++) {
+            authCode.append(secureRandom.nextInt(10)); // 0~9 랜덤 숫자 생성
+        }
+
+        return authCode.toString();
     }
 }

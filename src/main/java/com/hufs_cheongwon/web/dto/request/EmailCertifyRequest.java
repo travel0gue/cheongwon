@@ -11,5 +11,5 @@ public class EmailCertifyRequest {
     @Email
     private String email;
 
-    private Integer code;
+    private String code;
 }

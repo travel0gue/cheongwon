@@ -45,8 +45,10 @@ public class UserController {
      * 회원가입
      */
     @PostMapping("/register")
-    public ApiResponse<SignupResponse> registerUser(@Valid @RequestBody LoginRequest request) throws IOException{
-        SignupResponse response = usersService.registerUser(request);
+    public ApiResponse<SignupResponse> registerUser(@Valid @RequestBody LoginRequest request,
+                                                    @CookieValue(name = "email_token") String emailToken) throws IOException{
+        String tokenEmail = jwtUtil.getUsername(emailToken);
+        SignupResponse response = usersService.registerUser(request, tokenEmail);
         return ApiResponse.onSuccess(SuccessStatus.SIGN_IN_SUCCESS, response);
     }
 
@@ -56,30 +58,28 @@ public class UserController {
     @PostMapping("/code/send")
     public ApiResponse<Map<String, Object>> sendEmail(@Valid @RequestBody EmailSendRequest request) throws IOException {
 
-        Map<String, Object> response = usersService.sendEmailCode(request);
-
-        boolean isSuccess = (boolean) response.get("success");
-        if(isSuccess) {
-            return ApiResponse.onSuccess(SuccessStatus.EMAIL_SENT, null);
-        } else {
-            return ApiResponse.onFailure( String.valueOf(response.get("code")), (String) response.get("message"), null);
-        }
+        usersService.sendEmailCode(request);
+        return ApiResponse.onSuccess(SuccessStatus.EMAIL_SENT, null);
     }
 
     /**
      * 이메일 인증 코드 인증
      */
     @PostMapping("/code/certify")
-    public ApiResponse<Map<String, Object>> certifyEmail(@Valid @RequestBody EmailCertifyRequest request, HttpServletResponse httpServletResponse) throws IOException {
+    public ApiResponse<String> certifyEmail(@Valid @RequestBody EmailCertifyRequest request, HttpServletResponse response) throws IOException {
 
-        Map<String, Object> response = usersService.certifyEmailCode(request);
+        usersService.certifyEmailCode(request);
+        String emailToken = jwtUtil.createEmailToken(request.getEmail());
 
-        boolean isSuccess = (boolean) response.get("success");
-        if(isSuccess) {
-            return ApiResponse.onSuccess(SuccessStatus.EMAIL_VERIFIED, response);
-        } else {
-            return ApiResponse.onFailure( String.valueOf(response.get("code")), (String) response.get("message"), null);
-        }
+        ResponseCookie emailTokenCookie = ResponseCookie.from("email_token", emailToken)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .maxAge(Constant.EMAIL_COOKIE_EXPIRATION) // 10분
+                .path("/")
+                .build();
+        response.addHeader("Set-Cookie", emailTokenCookie.toString());
+        return ApiResponse.onSuccess(SuccessStatus.EMAIL_VERIFIED, emailTokenCookie.toString());
     }
 
     /**
@@ -103,7 +103,7 @@ public class UserController {
                 .maxAge(Constant.REFRESH_COOKIE_EXPIRATION) // 14일(7 * 24 * 60 * 60)
                 .path("/")
                 .build();
-        response.setHeader("Set-Cookie", refreshTokenCookie.toString());
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         return ApiResponse.onSuccess(SuccessStatus.REISSUE_TOKEN_SUCCESS, reissueResponse);
     }

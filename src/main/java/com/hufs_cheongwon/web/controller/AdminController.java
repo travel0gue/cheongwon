@@ -35,7 +35,7 @@ public class AdminController {
     //해싱한 비밀번호 값을 받아서 디비에 저장하기 위한 매세드 (나중에 다른 방법으로 바꾸는 게 좋을 것 같습니다)
     @GetMapping("/pwd")
     public ApiResponse<Void> registerUser(){
-        String encodedPassword = bCryptPasswordEncoder.encode("user1234");
+        String encodedPassword = bCryptPasswordEncoder.encode("user1234!");
         System.out.println(encodedPassword);
         return ApiResponse.onSuccess(SuccessStatus._OK, null);
     }

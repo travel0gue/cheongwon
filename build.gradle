@@ -21,9 +21,6 @@ configurations {
 
 repositories {
     mavenCentral()
-    maven {
-        url 'https://jitpack.io'
-    }
 }
 
 dependencies {
@@ -53,11 +50,14 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:5.9.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.9.0' // JUnit 5에서 Mockito 사용 시 필요
 
-    //univcert: 학교 이메일 인증
-    implementation 'com.github.in-seo:univcert:master-SNAPSHOT'
-
     // Mysql
     implementation 'com.mysql:mysql-connector-j'
+
+    //smtp - 이메일 전송
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    //thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 }
 
 tasks.named('test') {
