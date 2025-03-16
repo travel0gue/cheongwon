@@ -91,9 +91,8 @@ public class PetitionController {
 
     /**
      * 특정 청원 상세 조회
-     * 여기에 조회수 올리는 로직 추가하면 될 듯?
      */
-    @GetMapping("/{petition_id}")
+    @GetMapping("/{petition_id}/view")
     public ApiResponse<PetitionResponse> getPetitionById(@PathVariable (name = "petition_id")Long id) {
         return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
                 PetitionResponse.from(petitionService.getPetitionById(id)));
