@@ -36,6 +36,11 @@ public enum ErrorStatus {
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, StatusCode.USER.getCode(4015), "존재하지 않는 리프레쉬 토큰입니다."),
     COOKIE_EMPTY(HttpStatus.BAD_REQUEST, StatusCode.COMMON.getCode(4016), "쿠키가 비어있습니다."),
     BLACK_LIST_TOKEN(HttpStatus.BAD_REQUEST, StatusCode.COMMON.getCode(4017), "블랙리스트에 등록된 토큰입니다."),
+    EMAIL_NOT_SCHOOL(HttpStatus.BAD_REQUEST, StatusCode.USER.getCode(4018), "학교 이메일이 아닙니다."),
+    AUTH_CODE_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, StatusCode.USER.getCode(4019), "인증번호 발송에 실패하였습니다."),
+    AUTH_CODE_NOT_RECEIVED(HttpStatus.BAD_REQUEST, StatusCode.USER.getCode(4020), "인증코드를 받은 적이 없는 사용자입니다."),
+
+
 
     ADMIN_NOT_FOUND(HttpStatus.BAD_REQUEST, StatusCode.ADMIN.getCode(4001), "관리자 계정을 찾을 수 없습니다."),
     ;

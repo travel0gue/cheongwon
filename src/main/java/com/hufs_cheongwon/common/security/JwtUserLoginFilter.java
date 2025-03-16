@@ -77,7 +77,7 @@ public class JwtUserLoginFilter extends UsernamePasswordAuthenticationFilter {
                 .path("/")
                 .build();
 
-        response.setHeader("Set-Cookie", refreshTokenCookie.toString());
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         TokenDto tokenDto = TokenDto.builder()
                 .refreshToken(refreshToken)
