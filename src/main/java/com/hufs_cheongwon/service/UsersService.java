@@ -10,14 +10,10 @@ import com.hufs_cheongwon.web.dto.request.EmailCertifyRequest;
 import com.hufs_cheongwon.web.dto.request.EmailSendRequest;
 import com.hufs_cheongwon.web.dto.request.LoginRequest;
 import com.hufs_cheongwon.web.dto.response.SignupResponse;
-import com.univcert.api.UnivCert;
-import jakarta.mail.MessageRemovedException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,12 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import javax.swing.text.AbstractDocument;
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 
 @Service
 @RequiredArgsConstructor
