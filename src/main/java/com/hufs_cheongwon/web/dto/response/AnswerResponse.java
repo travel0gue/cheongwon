@@ -1,7 +1,9 @@
 package com.hufs_cheongwon.web.dto.response;
 
 import com.hufs_cheongwon.domain.Admin;
+import com.hufs_cheongwon.domain.Response;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import lombok.*;
 
 @Schema(description = "답변 응답 DTO")
@@ -14,6 +16,7 @@ public class AnswerResponse {
     private Long answerId;
     private String content;
     private WriterAdminInfo writerAdminInfo;
+    private LocalDate createTime;
 
     @Schema(description = "관리자 정보 DTO")
     @Getter
@@ -29,10 +32,11 @@ public class AnswerResponse {
     }
 
     @Builder
-    public static AnswerResponse createResponse(Long answerId, String content, Admin admin) {
+    public static AnswerResponse from(Response response, Admin admin) {
         return AnswerResponse.builder()
-                .answerId(answerId)
-                .content(content)
+                .answerId(response.getId())
+                .content(response.getContent())
+                .createTime(response.getCreatedAt().toLocalDate())
                 .writerAdminInfo(WriterAdminInfo.builder()
                         .adminId(admin.getId())
                         .departure(admin.getDeparture())
