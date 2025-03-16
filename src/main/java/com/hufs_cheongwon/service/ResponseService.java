@@ -30,14 +30,14 @@ public class ResponseService {
         Response response = responseRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 답변이 존재하지 않습니다. id= " + id));
 
-        return AnswerResponse.createResponse(response.getId(), response.getContent(), response.getAdmin());
+        return AnswerResponse.from(response, response.getAdmin());
     }
 
     public List<AnswerResponse> getResponsesByPetitionId(Long petitionId) {
         List<Response> responses = responseRepository.findByPetitionId(petitionId);
         List<AnswerResponse> answerResponses = new ArrayList<>();
         for(Response response : responses) {
-            answerResponses.add(AnswerResponse.createResponse(response.getId(), response.getContent(), response.getAdmin()));
+            answerResponses.add(AnswerResponse.from(response, response.getAdmin()));
         }
         return answerResponses;
     }
@@ -61,7 +61,7 @@ public class ResponseService {
 
         responseRepository.save(response);
 
-        return AnswerResponse.createResponse(response.getId(), response.getContent(), response.getAdmin());
+        return AnswerResponse.from(response, response.getAdmin());
     }
 
     @Transactional
@@ -69,7 +69,7 @@ public class ResponseService {
         Response response = responseRepository.findById(answerId)
                 .orElseThrow(() -> new IllegalArgumentException("답변를 찾을 수 없습니다. id: " + answerId));
         responseRepository.deleteById(answerId);
-        return AnswerResponse.createResponse(response.getId(), response.getContent(), response.getAdmin());
+        return AnswerResponse.from(response, response.getAdmin());
     }
 
     @Transactional
@@ -78,6 +78,6 @@ public class ResponseService {
                 .orElseThrow(() -> new IllegalArgumentException("답변를 찾을 수 없습니다. id: " + answerId));
         response.updateContent(request.getContent());
         responseRepository.save(response);
-        return AnswerResponse.createResponse(response.getId(), response.getContent(), response.getAdmin());
+        return AnswerResponse.from(response, response.getAdmin());
     }
 }
