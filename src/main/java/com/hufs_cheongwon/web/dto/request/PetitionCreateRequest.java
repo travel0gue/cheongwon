@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -25,4 +27,8 @@ public class PetitionCreateRequest {
     @NotBlank(message = "청원 내용은 필수입니다.")
     @Size(min = 20, message = "내용은 20자 이상이어야 합니다.")
     private String content;
+
+    private List<String> links;
+
+    private List<String> tags;
 }
