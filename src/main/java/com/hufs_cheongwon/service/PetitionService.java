@@ -65,10 +65,10 @@ public class PetitionService {
     @Transactional
     public Agreement agreePetition(Long petitionId, Long userId) {
         Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND);
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND));
 
         Petition petition = petitionRepository.findById(petitionId)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.PETITION_NOT_FOUND);
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.PETITION_NOT_FOUND));
 
         // 진행 중인 청원만 동의 가능
         if (petition.getPetitionStatus() != PetitionStatus.ONGOING) {
@@ -99,7 +99,7 @@ public class PetitionService {
     @Transactional
     public Report reportPetition(Long petitionId, Long userId) {
         Users user = usersRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND);
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND));
 
         Petition petition = petitionRepository.findById(petitionId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.PETITION_NOT_FOUND));
