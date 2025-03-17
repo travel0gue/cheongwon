@@ -1,6 +1,6 @@
 package com.hufs_cheongwon.common.security;
 
-import com.hufs_cheongwon.common.exception.UserNotFoundException;
+import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.domain.Admin;
 import com.hufs_cheongwon.repository.AdminRepository;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
@@ -22,7 +22,7 @@ public class CustomAdminDetailsService implements UserDetailsService {
         System.out.println("어드민 유저 디테일");
 
         Admin admin = adminRepository.findByEmail(username)
-                .orElseThrow(() -> new UserNotFoundException(ErrorStatus.ADMIN_NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.ADMIN_NOT_FOUND));
 
         return CustomAdminDetails.from(admin);
     }

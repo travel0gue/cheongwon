@@ -1,6 +1,6 @@
 package com.hufs_cheongwon.common.security;
 
-import com.hufs_cheongwon.common.exception.UserNotFoundException;
+import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.domain.Users;
 import com.hufs_cheongwon.repository.UsersRepository;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         System.out.println("커스텀 유저 디테일");
 
         Users user = usersRepository.findByEmail(username)
-                .orElseThrow(() -> new UserNotFoundException(ErrorStatus.USER_NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND));
 
         return CustomUserDetails.from(user);
     }

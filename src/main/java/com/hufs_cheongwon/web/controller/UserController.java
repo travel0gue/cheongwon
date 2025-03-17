@@ -1,7 +1,7 @@
 package com.hufs_cheongwon.web.controller;
 
 import com.hufs_cheongwon.common.Constant;
-import com.hufs_cheongwon.common.exception.UserNotFoundException;
+import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.common.security.CustomUserDetails;
 import com.hufs_cheongwon.common.security.JwtUtil;
 import com.hufs_cheongwon.domain.Users;
@@ -90,7 +90,7 @@ public class UserController {
             @CookieValue(name = "refresh_token") String refreshToken, HttpServletResponse response) throws IOException{
 
         if (refreshToken == null) {
-            throw new UserNotFoundException(ErrorStatus.COOKIE_EMPTY);
+            throw new ResourceNotFoundException(ErrorStatus.COOKIE_EMPTY);
         }
 
         LoginResponse reissueResponse = tokenService.reissueToken(refreshToken);

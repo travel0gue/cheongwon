@@ -3,7 +3,7 @@ package com.hufs_cheongwon.common.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hufs_cheongwon.common.Constant;
 import com.hufs_cheongwon.common.exception.AuthenticationException;
-import com.hufs_cheongwon.common.exception.UserNotFoundException;
+import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.domain.Admin;
 import com.hufs_cheongwon.service.TokenService;
 import com.hufs_cheongwon.web.apiResponse.ApiResponse;
@@ -102,7 +102,7 @@ public class JwtAdminLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         AuthenticationException exception = new AuthenticationException(objectMapper);
 
-        if (failed.getCause() instanceof UserNotFoundException) {
+        if (failed.getCause() instanceof ResourceNotFoundException) {
             exception.sendErrorResponse(response, ErrorStatus.ADMIN_NOT_FOUND);
         } else if (failed instanceof BadCredentialsException) {
             exception.sendErrorResponse(response, ErrorStatus.PASSWORD_WRONG);

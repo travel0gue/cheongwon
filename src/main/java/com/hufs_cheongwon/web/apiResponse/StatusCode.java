@@ -8,6 +8,7 @@ public enum StatusCode {
     CATEGORY("CATEGORY"),
     EMAIL("EMAIL"),
     PETITION("PETITION"),
+    ANSWER("ANSWER"),
     BOARD("BOARD"),
     ;
 

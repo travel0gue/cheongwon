@@ -7,11 +7,13 @@ import com.hufs_cheongwon.domain.Report;
 import com.hufs_cheongwon.domain.enums.PetitionStatus;
 import com.hufs_cheongwon.repository.PetitionRepository;
 import com.hufs_cheongwon.service.PetitionService;
+import com.hufs_cheongwon.service.PetitionStatService;
 import com.hufs_cheongwon.web.apiResponse.ApiResponse;
 import com.hufs_cheongwon.web.apiResponse.success.SuccessStatus;
 import com.hufs_cheongwon.web.dto.request.PetitionCreateRequest;
 import com.hufs_cheongwon.web.dto.response.AgreementResponse;
 import com.hufs_cheongwon.web.dto.response.PetitionResponse;
+import com.hufs_cheongwon.web.dto.response.PetitionStatsDto;
 import com.hufs_cheongwon.web.dto.response.ReportResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class PetitionController {
 
     private final PetitionRepository petitionRepository;
     private final PetitionService petitionService;
+    private final PetitionStatService petitionStatService;
 
     /**
      * 청원 목록 조회
@@ -207,5 +210,13 @@ public class PetitionController {
     ){
         Report report = petitionService.reportPetition(petitionId, customUserDetails.getUser().getId());
         return ApiResponse.onSuccess(SuccessStatus.PETITION_REPORTED, ReportResponse.from(report));
+    }
+
+    /**
+     * 청원 통계 조회
+     */
+    @GetMapping("/stat")
+    public ApiResponse<PetitionStatsDto> getPetitionStats(){
+        return ApiResponse.onSuccess(SuccessStatus.PETITION_STATS_RETRIEVED ,petitionStatService.getPetitionStats());
     }
 }
