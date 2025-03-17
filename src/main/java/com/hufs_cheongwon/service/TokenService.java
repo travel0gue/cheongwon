@@ -1,6 +1,6 @@
 package com.hufs_cheongwon.service;
 
-import com.hufs_cheongwon.common.exception.UserNotFoundException;
+import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.common.security.JwtUtil;
 import com.hufs_cheongwon.domain.Admin;
 import com.hufs_cheongwon.domain.BlackList;
@@ -57,7 +57,7 @@ public class TokenService {
 
     public LoginResponse reissueToken(String oldRefreshToken) {
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(oldRefreshToken)
-                .orElseThrow(() -> new UserNotFoundException(ErrorStatus.REFRESH_TOKEN_NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.REFRESH_TOKEN_NOT_FOUND));
 
         String role = refreshTokenEntity.getRole();
         String email = refreshTokenEntity.getEmail();

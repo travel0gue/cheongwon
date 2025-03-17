@@ -40,6 +40,14 @@ public enum ErrorStatus {
     AUTH_CODE_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, StatusCode.USER.getCode(4019), "인증번호 발송에 실패하였습니다."),
     AUTH_CODE_NOT_RECEIVED(HttpStatus.BAD_REQUEST, StatusCode.USER.getCode(4020), "인증코드를 받은 적이 없는 사용자입니다."),
 
+    PETITION_NOT_FOUND(HttpStatus.NOT_FOUND, StatusCode.PETITION.getCode(4001), "해당 청원이 존재하지 않습니다."),
+    PETITION_NOT_ONGOING(HttpStatus.BAD_REQUEST, StatusCode.PETITION.getCode(4002), "진행 중인 청원만 동의할 수 있습니다."),
+    ALREADY_AGREED(HttpStatus.CONFLICT, StatusCode.PETITION.getCode(4003), "이미 동의한 청원입니다."),
+    SELF_AGREEMENT_NOT_ALLOWED(HttpStatus.BAD_REQUEST, StatusCode.PETITION.getCode(4004), "자신의 청원에는 동의할 수 없습니다."),
+    SELF_REPORT_NOT_ALLOWED(HttpStatus.BAD_REQUEST, StatusCode.PETITION.getCode(4005), "자신의 청원에는 신고할 수 없습니다."),
+    ALREADY_REPORTED(HttpStatus.CONFLICT, StatusCode.PETITION.getCode(4006), "이미 신고한 청원입니다."),
+
+    ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, StatusCode.ANSWER.getCode(4001), "해당 답변이 존재하지 않습니다."),
 
 
     ADMIN_NOT_FOUND(HttpStatus.BAD_REQUEST, StatusCode.ADMIN.getCode(4001), "관리자 계정을 찾을 수 없습니다."),
