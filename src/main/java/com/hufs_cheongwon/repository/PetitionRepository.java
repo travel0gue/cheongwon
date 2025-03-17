@@ -57,4 +57,20 @@ public interface PetitionRepository extends JpaRepository<Petition, Long> {
 
     // 동의 수가 많은 순으로 청원 조회
     Page<Petition> findAllByOrderByAgreeCountDesc(Pageable pageable);
+
+    /**
+     * 일정 동의 수 이상 받은 청원 수 조회
+     */
+    long countByAgreeCountGreaterThanEqual(int agreeCount);
+
+    /**
+     * 전체 동의 수(Agreement 테이블의 총 행 수) 조회
+     */
+    @Query("SELECT COUNT(a) FROM Agreement a")
+    long countTotalAgreements();
+
+    /**
+     * 특정 상태의 청원 수 조회
+     */
+    long countByPetitionStatus(PetitionStatus status);
 }
