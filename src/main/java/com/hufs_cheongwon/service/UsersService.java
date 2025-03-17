@@ -1,7 +1,7 @@
 package com.hufs_cheongwon.service;
 
 import com.hufs_cheongwon.common.exception.DuplicateResourceException;
-import com.hufs_cheongwon.common.exception.UserNotFoundException;
+import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.domain.Users;
 import com.hufs_cheongwon.domain.enums.Status;
 import com.hufs_cheongwon.repository.UsersRepository;
@@ -49,7 +49,7 @@ public class UsersService {
         System.out.println(tokenEmail+email);
         // 인증된 이메일인지 확인
         if (!tokenEmail.equals(email)) {
-            throw new UserNotFoundException(ErrorStatus.EMAIL_UNCERTIFIED);
+            throw new ResourceNotFoundException(ErrorStatus.EMAIL_UNCERTIFIED);
         }
 
         Users newUser = Users.builder()
@@ -71,7 +71,7 @@ public class UsersService {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         String email = request.getEmail();
         if (!email.endsWith("@hufs.ac.kr")) {
-            throw new UserNotFoundException(ErrorStatus.EMAIL_NOT_SCHOOL);
+            throw new ResourceNotFoundException(ErrorStatus.EMAIL_NOT_SCHOOL);
         }
         try {
             String code = generateAuthCode();
@@ -93,7 +93,7 @@ public class UsersService {
             cacheService.saveEmailCode(email, code);
             System.out.println(code);
         } catch (Exception e) {
-            throw new UserNotFoundException(ErrorStatus.AUTH_CODE_SEND_FAIL);
+            throw new ResourceNotFoundException(ErrorStatus.AUTH_CODE_SEND_FAIL);
         }
     }
 
@@ -104,9 +104,9 @@ public class UsersService {
         System.out.println(code);
         String validCode = cacheService.getEmailCode(email);
         if (validCode == null) {
-            throw new UserNotFoundException(ErrorStatus.AUTH_CODE_NOT_RECEIVED);
+            throw new ResourceNotFoundException(ErrorStatus.AUTH_CODE_NOT_RECEIVED);
         } else if (!validCode.equals(code)) {
-            throw new UserNotFoundException(ErrorStatus.AUTH_CODE_INVALID);
+            throw new ResourceNotFoundException(ErrorStatus.AUTH_CODE_INVALID);
         }
         // 코드가 일치하면 캐시에서 삭제
         cacheService.evictEmailCode(email);
