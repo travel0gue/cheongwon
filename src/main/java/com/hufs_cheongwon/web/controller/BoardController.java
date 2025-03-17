@@ -1,9 +1,12 @@
 package com.hufs_cheongwon.web.controller;
 
+import com.hufs_cheongwon.common.exception.InvalidStateException;
+import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.domain.Board;
 import com.hufs_cheongwon.domain.enums.BoardType;
 import com.hufs_cheongwon.repository.BoardRepository;
 import com.hufs_cheongwon.web.apiResponse.ApiResponse;
+import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import com.hufs_cheongwon.web.apiResponse.success.SuccessStatus;
 import com.hufs_cheongwon.web.dto.response.BoardResponse;
 import lombok.RequiredArgsConstructor;
@@ -45,24 +48,12 @@ public class BoardController {
             @PathVariable(name = "board_id")Long id
     ) {
         Board board = boardRepository.findById(id)
-                .orElseThrow(() -> new );
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.BOARD_NOT_FOUND));
 
+        // 요청한 boardType과 실제 데이터의 boardType이 일치하는지 검증
+        if (board.getBoardType() != type) {
+            throw new InvalidStateException(ErrorStatus.INVALID_BOARD_TYPE);
+        }
+        return ApiResponse.onSuccess(SuccessStatus.BOARD_RETRIEVED, BoardResponse.from(board, type));
     }
-
-    /**
-     * QnA 목록 조회
-     */
-    @GetMapping("/qna")
-    public ApiResponse<Page<BoardResponse>> getQnAs(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size
-    ){
-
-    }
-
-    /**
-     * 특정 QnA 조회
-     */
-    @GetMapping("/qna/{qna_id}")
-    public ApiResponse<BoardResponse> getQnAById(@PathVariable(name = "notice_id")Long id)
 }
