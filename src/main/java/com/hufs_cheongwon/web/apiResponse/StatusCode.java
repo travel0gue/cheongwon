@@ -8,7 +8,8 @@ public enum StatusCode {
     CATEGORY("CATEGORY"),
     EMAIL("EMAIL"),
     PETITION("PETITION"),
-    ANSWER("ANSWER")
+    ANSWER("ANSWER"),
+    BOARD("BOARD"),
     ;
 
     private final String prefix;
