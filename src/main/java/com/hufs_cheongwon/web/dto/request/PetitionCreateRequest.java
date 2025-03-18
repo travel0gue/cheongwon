@@ -29,6 +29,4 @@ public class PetitionCreateRequest {
     private String content;
 
     private List<String> links;
-
-    private List<String> tags;
 }

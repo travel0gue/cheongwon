@@ -2,20 +2,18 @@ package com.hufs_cheongwon.service;
 
 import com.hufs_cheongwon.common.exception.InvalidStateException;
 import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
-import com.hufs_cheongwon.domain.Agreement;
-import com.hufs_cheongwon.domain.Petition;
-import com.hufs_cheongwon.domain.Report;
-import com.hufs_cheongwon.domain.Users;
+import com.hufs_cheongwon.domain.*;
 import com.hufs_cheongwon.domain.enums.PetitionStatus;
-import com.hufs_cheongwon.repository.AgreementRepository;
-import com.hufs_cheongwon.repository.PetitionRepository;
-import com.hufs_cheongwon.repository.ReportRepository;
-import com.hufs_cheongwon.repository.UsersRepository;
+import com.hufs_cheongwon.repository.*;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import com.hufs_cheongwon.web.dto.request.PetitionCreateRequest;
+import com.hufs_cheongwon.web.dto.response.AnswerResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,6 +54,15 @@ public class PetitionService {
                 .petitionStatus(PetitionStatus.ONGOING) // 기본 상태는 ONGOING
                 .build();
 
+        if (petitionRequest.getLinks() != null && !petitionRequest.getLinks().isEmpty()) {
+            for (String linkStr : petitionRequest.getLinks()) {
+                Link link = Link.builder()
+                        .link(linkStr)
+                        .petition(petition)
+                        .build();
+                petition.addLink(link); // Petition에 추가
+            }
+        }
         return petitionRepository.save(petition);
     }
 

@@ -2,6 +2,9 @@ package com.hufs_cheongwon.repository;
 
 import com.hufs_cheongwon.domain.Agreement;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AgreementRepository extends JpaRepository<Agreement, Long> {
@@ -24,4 +27,9 @@ public interface AgreementRepository extends JpaRepository<Agreement, Long> {
      * 사용자 ID로 동의한 청원 수 조회
      */
     long countByUsersId(Long userId);
+
+    /**
+     * 청원 ID로 동의 정보 목록 조회
+     */
+    Page<Agreement> findByPetitionId(Long petitionId, Pageable pageable);
 }

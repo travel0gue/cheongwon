@@ -4,6 +4,8 @@ import com.hufs_cheongwon.domain.Agreement;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Schema(description = "청원 동의 응답 DTO")
 @Getter
 @Builder
@@ -15,6 +17,7 @@ public class AgreementResponse {
     private Long petitionId;
     private Long agreementUserId;
     private String agreementUserEmail;
+    private LocalDateTime createdAt;
 
     public static AgreementResponse from(Agreement agreement) {
         return AgreementResponse.builder()
@@ -22,6 +25,7 @@ public class AgreementResponse {
                 .petitionId(agreement.getPetition().getId())
                 .agreementUserId(agreement.getUsers().getId())
                 .agreementUserEmail(agreement.getUsers().getEmail())
+                .createdAt(agreement.getCreatedAt())
                 .build();
     }
 }
