@@ -1,11 +1,15 @@
 package com.hufs_cheongwon.web.dto.response;
 
 import com.hufs_cheongwon.common.Constant;
+import com.hufs_cheongwon.domain.Link;
 import com.hufs_cheongwon.domain.Petition;
 import com.hufs_cheongwon.domain.enums.Category;
 import com.hufs_cheongwon.domain.enums.PetitionStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.*;
 
 @Schema(description = "청원 응답 DTO")
@@ -24,10 +28,19 @@ public class PetitionResponse {
     private Integer viewCount;
     private Integer reportCount;
     private String writerEmail;
+    private List<String> links;
     private LocalDate createDate;
     private LocalDate endDate;
+    private List<AnswerResponse> answerResponses;
 
     public static PetitionResponse from(Petition petition) {
+        List<String> linkList = new ArrayList<>();
+        if (petition.getLinks() != null) {
+            for (Link link : petition.getLinks()) {
+                linkList.add(link.getLink());
+            }
+        }
+
         return PetitionResponse.builder()
                 .id(petition.getId())
                 .title(petition.getTitle())
@@ -38,8 +51,35 @@ public class PetitionResponse {
                 .viewCount(petition.getViewCount())
                 .reportCount(petition.getReportCount())
                 .writerEmail(petition.getUsers().getEmail())
+                .links(linkList)
                 .createDate(petition.getCreatedAt().toLocalDate())
                 .endDate(petition.getCreatedAt().toLocalDate().plus(Constant.PETITION_ACTIVE_PERIOD))
+                .answerResponses(null)
+                .build();
+    }
+
+    public static PetitionResponse from(Petition petition, List<AnswerResponse> answerResponses) {
+        List<String> linkList = new ArrayList<>();
+        if (petition.getLinks() != null) {
+            for (Link link : petition.getLinks()) {
+                linkList.add(link.getLink());
+            }
+        }
+
+        return PetitionResponse.builder()
+                .id(petition.getId())
+                .title(petition.getTitle())
+                .category(petition.getCategory())
+                .content(petition.getContent())
+                .petitionStatus(petition.getPetitionStatus())
+                .agreeCount(petition.getAgreeCount())
+                .viewCount(petition.getViewCount())
+                .reportCount(petition.getReportCount())
+                .writerEmail(petition.getUsers().getEmail())
+                .links(linkList)
+                .createDate(petition.getCreatedAt().toLocalDate())
+                .endDate(petition.getCreatedAt().toLocalDate().plus(Constant.PETITION_ACTIVE_PERIOD))
+                .answerResponses(answerResponses)
                 .build();
     }
 }

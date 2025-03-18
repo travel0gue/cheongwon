@@ -44,6 +44,7 @@ public class UsersService {
         // 존재하는 이메일인지 확인
         Boolean isExist = usersRepository.existsByEmail(email);
         if (isExist){
+
             throw new DuplicateResourceException(ErrorStatus.EMAIL_DUPLICATED);
         }
         System.out.println(tokenEmail+email);

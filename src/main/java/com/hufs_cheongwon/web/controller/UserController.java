@@ -112,7 +112,7 @@ public class UserController {
      * 로그아웃
      */
     @PostMapping("/logout")
-    public ApiResponse<Users> logoutUser(HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ApiResponse<Void> logoutUser(HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         //헤더에서 access token 추출
         String accessToken = jwtUtil.resolveAccessToken(request);
@@ -121,23 +121,22 @@ public class UserController {
         //access token 블랙리스트 등록 & refresh token 삭제
         tokenService.destroyToken(username, accessToken);
 
-        return ApiResponse.onSuccess(SuccessStatus.USER_LOGOUT_SUCCESS, customUserDetails.getUser());
+        return ApiResponse.onSuccess(SuccessStatus.USER_LOGOUT_SUCCESS, null);
     }
 
     /**
      * 회원 탈퇴
      */
     @PostMapping("/delete")
-    public ApiResponse<Users> deleteUser(HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ApiResponse<Void> deleteUser(HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         //헤더에서 access token 추출
         String accessToken = jwtUtil.resolveAccessToken(request);
         String username = jwtUtil.getUsername(accessToken);
 
         usersService.withdrawUser(username, accessToken);
 
-        return ApiResponse.onSuccess(SuccessStatus.USER_SING_OUT_SUCCESS, customUserDetails.getUser());
+        return ApiResponse.onSuccess(SuccessStatus.USER_SING_OUT_SUCCESS, null);
     }
-
 
     @GetMapping("/test")
     public ApiResponse<Void> testAuthorization() {

@@ -4,17 +4,17 @@ import com.hufs_cheongwon.common.security.CustomUserDetails;
 import com.hufs_cheongwon.domain.Agreement;
 import com.hufs_cheongwon.domain.Petition;
 import com.hufs_cheongwon.domain.Report;
+import com.hufs_cheongwon.domain.Response;
 import com.hufs_cheongwon.domain.enums.PetitionStatus;
+import com.hufs_cheongwon.repository.AgreementRepository;
 import com.hufs_cheongwon.repository.PetitionRepository;
+import com.hufs_cheongwon.repository.ResponseRepository;
 import com.hufs_cheongwon.service.PetitionService;
 import com.hufs_cheongwon.service.PetitionStatService;
 import com.hufs_cheongwon.web.apiResponse.ApiResponse;
 import com.hufs_cheongwon.web.apiResponse.success.SuccessStatus;
 import com.hufs_cheongwon.web.dto.request.PetitionCreateRequest;
-import com.hufs_cheongwon.web.dto.response.AgreementResponse;
-import com.hufs_cheongwon.web.dto.response.PetitionResponse;
-import com.hufs_cheongwon.web.dto.response.PetitionStatsDto;
-import com.hufs_cheongwon.web.dto.response.ReportResponse;
+import com.hufs_cheongwon.web.dto.response.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +34,8 @@ public class PetitionController {
     private final PetitionRepository petitionRepository;
     private final PetitionService petitionService;
     private final PetitionStatService petitionStatService;
+    private final AgreementRepository agreementRepository;
+    private final ResponseRepository responseRepository;
 
     /**
      * 청원 목록 조회
@@ -97,8 +99,14 @@ public class PetitionController {
      */
     @GetMapping("/{petition_id}/view")
     public ApiResponse<PetitionResponse> getPetitionById(@PathVariable (name = "petition_id")Long id) {
+
+        List<Response> responses = responseRepository.findByPetitionId(id);
+        List<AnswerResponse> answerResponses = new ArrayList<>();
+        for(Response response : responses) {
+            answerResponses.add(AnswerResponse.from(response, response.getAdmin()));
+        }
         return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
-                PetitionResponse.from(petitionService.getPetitionById(id)));
+                PetitionResponse.from(petitionService.getPetitionById(id), answerResponses));
     }
 
     /**
@@ -199,6 +207,23 @@ public class PetitionController {
         Agreement agreement = petitionService.agreePetition(petitionId, customUserDetails.getUser().getId());
         return ApiResponse.onSuccess(SuccessStatus.PETITION_AGREE_SUCCESS, AgreementResponse.from(agreement));
     }
+
+    /**
+     * 동의 내용 조회
+     */
+    @GetMapping("/{petition_id}/agreements")
+    public ApiResponse<Page<AgreementResponse>> getAgreements(
+            @PathVariable("/petition_id") Long petitionId,
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size
+
+    ){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Agreement> agreements = agreementRepository.findByPetitionId(petitionId, pageable);
+        Page<AgreementResponse> agreementResponses = agreements.map(AgreementResponse::from);
+        return ApiResponse.onSuccess(SuccessStatus.PETITION_AGREEMENTS_RETRIEVED, agreementResponses);
+    }
+
 
     /**
      * 청원 신고

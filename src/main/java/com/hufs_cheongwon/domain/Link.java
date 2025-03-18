@@ -1,14 +1,14 @@
 package com.hufs_cheongwon.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Link {
+public class Link extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,4 +18,15 @@ public class Link {
     private Petition petition;
 
     private String link;
+
+    /**
+     *연관관계 매핑
+     */
+    public void setPetition(Petition petition) {
+        this.petition = petition;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
 }

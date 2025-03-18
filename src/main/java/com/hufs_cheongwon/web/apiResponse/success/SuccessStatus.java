@@ -57,6 +57,7 @@ public enum SuccessStatus {
     ANSWERED_PETITIONS_RETRIEVED(HttpStatus.OK, StatusCode.PETITION.getCode(2021), "답변된 청원 목록이 성공적으로 조회되었습니다."),
     PETITION_ANSWER_RETRIEVED(HttpStatus.OK, StatusCode.PETITION.getCode(2022), "청원 답변이 성공적으로 조회되었습니다."),
     PETITION_STATS_RETRIEVED(HttpStatus.OK, StatusCode.PETITION.getCode(2023), "청원 통계가 성공적으로 조회되었습니다."),
+    PETITION_AGREEMENTS_RETRIEVED(HttpStatus.OK, StatusCode.PETITION.getCode(2024), "청원 동의 목록이 성공적으로 조회되었습니다."),
 
     BOARDS_RETRIEVED(HttpStatus.OK, StatusCode.BOARD.getCode(2001), "게시판 목록이 성공적으로 조회되었습니다."),
     BOARD_RETRIEVED(HttpStatus.OK, StatusCode.BOARD.getCode(2002), "게시판이 성공적으로 조회되었습니다."),

@@ -66,11 +66,8 @@ public class Petition extends BaseTimeEntity{
     @OneToMany(mappedBy = "petition", cascade = CascadeType.ALL)
     private List<Report> reports = new ArrayList<>();
 
-    @OneToMany(mappedBy = "petition", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "petition", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Link> links = new ArrayList<>();
-
-    @OneToMany(mappedBy = "petition", cascade = CascadeType.ALL)
-    private List<Tag> tags = new ArrayList<>();
 
     @Builder
     public Petition(Users user, String title, Category category, String content, PetitionStatus petitionStatus) {
@@ -106,5 +103,14 @@ public class Petition extends BaseTimeEntity{
 
     public void addAgreement(Agreement agreement) {
         this.agreements.add(agreement);
+    }
+
+    public void addLink(Link link) {
+        this.links.add(link);
+        link.setPetition(this);
+    }
+
+    public void addLinks(List<Link> links) {
+        this.links.addAll(links);
     }
 }
