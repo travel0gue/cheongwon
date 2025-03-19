@@ -18,34 +18,34 @@ public interface PetitionRepository extends JpaRepository<Petition, Long> {
     @Override
     Optional<Petition> findById(Long id);
 
-    Page<Petition> findByPetitionStatus(PetitionStatus status, Pageable pageable);
+    Page<Petition> findByPetitionStatusOrderByCreatedAtDesc(PetitionStatus status, Pageable pageable);
 
     /**
      * 진행중인 청원 가져오기
      */
     default Page<Petition> findAllOngoingPetitions(Pageable pageable) {
-        return findByPetitionStatus(PetitionStatus.ONGOING, pageable);
+        return findByPetitionStatusOrderByCreatedAtDesc(PetitionStatus.ONGOING, pageable);
     }
 
     /**
      * 만료된 청원 가져오기 (EXPIRED 상태)
      */
     default Page<Petition> findAllExpiredPetitions(Pageable pageable) {
-        return findByPetitionStatus(PetitionStatus.EXPIRED, pageable);
+        return findByPetitionStatusOrderByCreatedAtDesc(PetitionStatus.EXPIRED, pageable);
     }
 
     /**
      * 대기중인 청원 가져오기 (WAITING 상태)
      */
     default Page<Petition> findAllWaitingPetitions(Pageable pageable) {
-        return findByPetitionStatus(PetitionStatus.WAITING, pageable);
+        return findByPetitionStatusOrderByCreatedAtDesc(PetitionStatus.WAITING, pageable);
     }
 
     /**
      * 답변된 청원 가져오기 (ANSWER_COMPLETED 상태)
      */
     default Page<Petition> findAllAnsweredPetitions(Pageable pageable) {
-        return findByPetitionStatus(PetitionStatus.ANSWER_COMPLETED, pageable);
+        return findByPetitionStatusOrderByCreatedAtDesc(PetitionStatus.ANSWER_COMPLETED, pageable);
     }
 
     // 제목 또는 내용에 키워드가 포함된 청원 검색
@@ -62,12 +62,6 @@ public interface PetitionRepository extends JpaRepository<Petition, Long> {
      * 일정 동의 수 이상 받은 청원 수 조회
      */
     long countByAgreeCountGreaterThanEqual(int agreeCount);
-
-    /**
-     * 전체 동의 수(Agreement 테이블의 총 행 수) 조회
-     */
-    @Query("SELECT COUNT(a) FROM Agreement a")
-    long countTotalAgreements();
 
     /**
      * 특정 상태의 청원 수 조회
