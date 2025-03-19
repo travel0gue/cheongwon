@@ -89,7 +89,7 @@ public class PetitionController {
             @RequestParam(name = "size",defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Petition> petitions = petitionRepository.findByPetitionStatus(status, pageable);
+        Page<Petition> petitions = petitionRepository.findByPetitionStatusOrderByCreatedAtDesc(status, pageable);
         Page<PetitionResponse> petitionPage = petitions.map(PetitionResponse::from);
         return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED, petitionPage);
     }
@@ -213,7 +213,7 @@ public class PetitionController {
      */
     @GetMapping("/{petition_id}/agreements")
     public ApiResponse<Page<AgreementResponse>> getAgreements(
-            @PathVariable("/petition_id") Long petitionId,
+            @PathVariable("petition_id") Long petitionId,
             @RequestParam(name = "page",defaultValue = "0") int page,
             @RequestParam(name = "size",defaultValue = "10") int size
 
