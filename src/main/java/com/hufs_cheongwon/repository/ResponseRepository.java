@@ -17,4 +17,7 @@ public interface ResponseRepository extends JpaRepository<Response, Long> {
     Optional<Response> findById(Long id);
 
     Response findByPetitionId(Long id);
+
+    Optional<Response> findOptionalByPetitionId(Long id);
 }
+

@@ -16,6 +16,7 @@ import com.hufs_cheongwon.web.apiResponse.success.SuccessStatus;
 import com.hufs_cheongwon.web.dto.request.PetitionCreateRequest;
 import com.hufs_cheongwon.web.dto.response.*;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -100,10 +101,18 @@ public class PetitionController {
     @GetMapping("/{petition_id}/view")
     public ApiResponse<PetitionResponse> getPetitionById(@PathVariable (name = "petition_id")Long id) {
 
-        Response response = responseRepository.findByPetitionId(id);
+        Petition petition = petitionService.getPetitionById(id);
 
-        return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
-                PetitionResponse.from(petitionService.getPetitionById(id), AnswerResponse.from(response, response.getAdmin())));
+        Optional<Response> responseOpt = responseRepository.findOptionalByPetitionId(id);
+
+        if (responseOpt.isPresent()) {
+            Response response = responseOpt.get();
+            return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
+                    PetitionResponse.from(petition, AnswerResponse.from(response, response.getAdmin())));
+        } else {
+            return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
+                    PetitionResponse.from(petition));
+        }
     }
 
     /**
