@@ -54,6 +54,7 @@ public enum ErrorStatus {
 
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, StatusCode.BOARD.getCode(4001), "해당 게시글이 존재하지 않습니다."),
     INVALID_BOARD_TYPE(HttpStatus.BAD_REQUEST, StatusCode.BOARD.getCode(4002), "잘못된 게시판 타입 요청입니다."),
+    KEY_WRONG(HttpStatus.BAD_REQUEST, StatusCode.BOARD.getCode(4003), "잘못된 key 입니다.")
     ;
 
 
