@@ -8,8 +8,6 @@ import com.hufs_cheongwon.web.dto.response.AnswerResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/answers")
 @RequiredArgsConstructor
