@@ -74,7 +74,7 @@ public class UserController {
         ResponseCookie emailTokenCookie = ResponseCookie.from("email_token", emailToken)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .maxAge(Constant.EMAIL_COOKIE_EXPIRATION) // 10분
                 .path("/")
                 .build();
@@ -99,7 +99,7 @@ public class UserController {
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", reissueResponse.getTokenDto().getRefreshToken())
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .maxAge(Constant.REFRESH_COOKIE_EXPIRATION) // 14일(7 * 24 * 60 * 60)
                 .path("/")
                 .build();
