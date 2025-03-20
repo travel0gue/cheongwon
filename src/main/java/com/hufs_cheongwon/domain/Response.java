@@ -20,7 +20,7 @@ public class Response extends BaseTimeEntity{
     @JoinColumn(name = "admin_id", nullable = false)
     private Admin admin;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "petition_id", nullable = false)
     private Petition petition;
 

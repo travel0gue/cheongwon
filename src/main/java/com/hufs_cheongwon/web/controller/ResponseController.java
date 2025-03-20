@@ -30,7 +30,7 @@ public class ResponseController {
      * 해당 청원의 답변 가져오기
      */
     @GetMapping("/petition/{petition_id}")
-    public ApiResponse<List<AnswerResponse>> getResponsesByPetitionId(
+    public ApiResponse<AnswerResponse> getResponsesByPetitionId(
             @PathVariable("petition_id") Long id) {
         return ApiResponse.onSuccess(SuccessStatus.PETITION_ANSWER_RETRIEVED, responseService.getResponsesByPetitionId(id));
     }

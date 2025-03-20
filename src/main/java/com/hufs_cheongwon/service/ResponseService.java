@@ -1,5 +1,6 @@
 package com.hufs_cheongwon.service;
 
+import com.hufs_cheongwon.common.exception.InvalidStateException;
 import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.domain.Admin;
 import com.hufs_cheongwon.domain.Petition;
@@ -35,13 +36,10 @@ public class ResponseService {
         return AnswerResponse.from(response, response.getAdmin());
     }
 
-    public List<AnswerResponse> getResponsesByPetitionId(Long petitionId) {
-        List<Response> responses = responseRepository.findByPetitionId(petitionId);
-        List<AnswerResponse> answerResponses = new ArrayList<>();
-        for(Response response : responses) {
-            answerResponses.add(AnswerResponse.from(response, response.getAdmin()));
-        }
-        return answerResponses;
+    public AnswerResponse getResponsesByPetitionId(Long petitionId) {
+        Response response = responseRepository.findByPetitionId(petitionId);
+
+        return AnswerResponse.from(response, response.getAdmin());
     }
 
 
@@ -52,6 +50,10 @@ public class ResponseService {
 
         Petition petition = petitionRepository.findById(petitionId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.PETITION_NOT_FOUND));
+
+        if(responseRepository.findByPetitionId(petitionId) != null){
+            throw new InvalidStateException(ErrorStatus.ALREADY_ANSWERED);
+        }
 
         Response response = Response.builder()
                 .admin(admin)

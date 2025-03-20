@@ -100,13 +100,10 @@ public class PetitionController {
     @GetMapping("/{petition_id}/view")
     public ApiResponse<PetitionResponse> getPetitionById(@PathVariable (name = "petition_id")Long id) {
 
-        List<Response> responses = responseRepository.findByPetitionId(id);
-        List<AnswerResponse> answerResponses = new ArrayList<>();
-        for(Response response : responses) {
-            answerResponses.add(AnswerResponse.from(response, response.getAdmin()));
-        }
+        Response response = responseRepository.findByPetitionId(id);
+
         return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
-                PetitionResponse.from(petitionService.getPetitionById(id), answerResponses));
+                PetitionResponse.from(petitionService.getPetitionById(id), AnswerResponse.from(response, response.getAdmin())));
     }
 
     /**
