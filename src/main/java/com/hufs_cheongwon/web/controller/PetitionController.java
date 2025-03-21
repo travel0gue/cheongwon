@@ -17,6 +17,7 @@ import com.hufs_cheongwon.web.dto.PetitionSortType;
 import com.hufs_cheongwon.web.dto.request.PetitionCreateRequest;
 import com.hufs_cheongwon.web.dto.response.*;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -101,13 +102,18 @@ public class PetitionController {
     @GetMapping("/{petition_id}/view")
     public ApiResponse<PetitionResponse> getPetitionById(@PathVariable (name = "petition_id")Long id) {
 
-        List<Response> responses = responseRepository.findByPetitionId(id);
-        List<AnswerResponse> answerResponses = new ArrayList<>();
-        for(Response response : responses) {
-            answerResponses.add(AnswerResponse.from(response, response.getAdmin()));
+        Petition petition = petitionService.getPetitionById(id);
+
+        Optional<Response> responseOpt = responseRepository.findOptionalByPetitionId(id);
+
+        if (responseOpt.isPresent()) {
+            Response response = responseOpt.get();
+            return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
+                    PetitionResponse.from(petition, AnswerResponse.from(response, response.getAdmin())));
+        } else {
+            return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
+                    PetitionResponse.from(petition));
         }
-        return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
-                PetitionResponse.from(petitionService.getPetitionById(id), answerResponses));
     }
 
     /**
