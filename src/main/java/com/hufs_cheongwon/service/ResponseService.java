@@ -35,7 +35,8 @@ public class ResponseService {
     }
 
     public AnswerResponse getResponsesByPetitionId(Long petitionId) {
-        Response response = responseRepository.findByPetitionId(petitionId);
+        Response response = responseRepository.findOptionalByPetitionId(petitionId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.ANSWER_NOT_FOUND));
 
         return AnswerResponse.from(response, response.getAdmin());
     }

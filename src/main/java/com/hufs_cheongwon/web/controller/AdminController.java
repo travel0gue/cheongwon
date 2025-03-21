@@ -55,7 +55,7 @@ public class AdminController {
      * 관리자 로그아웃
      */
     @PostMapping("/logout")
-    public ApiResponse<Admin> logoutUser(HttpServletRequest request, @AuthenticationPrincipal CustomAdminDetails customAdminDetails) {
+    public ApiResponse<Void> logoutUser(HttpServletRequest request, @AuthenticationPrincipal CustomAdminDetails customAdminDetails) {
 
         //헤더에서 access token 추출
         String accessToken = jwtUtil.resolveAccessToken(request);
@@ -63,7 +63,7 @@ public class AdminController {
 
         //access token 블랙리스트 등록 & refresh token 삭제
         tokenService.destroyToken(username, accessToken);
-        return ApiResponse.onSuccess(SuccessStatus.ADMIN_LOGOUT_SUCCESS, customAdminDetails.getAdmin());
+        return ApiResponse.onSuccess(SuccessStatus.ADMIN_LOGOUT_SUCCESS, null);
     }
 
     /**
