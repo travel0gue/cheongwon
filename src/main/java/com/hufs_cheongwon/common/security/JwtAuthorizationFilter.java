@@ -70,7 +70,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authToken);
                 filterChain.doFilter(request, response);
-            } else if (role.equals("ROLE_ADMIN")) {
+            } else {
 
                 SecurityContextHolder.clearContext();
                 Optional<Admin> admin = adminRepository.findByEmail(username);

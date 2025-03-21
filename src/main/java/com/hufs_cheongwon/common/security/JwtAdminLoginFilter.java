@@ -17,6 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAdminLoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -61,9 +63,11 @@ public class JwtAdminLoginFilter extends UsernamePasswordAuthenticationFilter {
         CustomAdminDetails customAdminDetails = (CustomAdminDetails)authentication.getPrincipal();
         Admin admin = customAdminDetails.getAdmin();
 
+        log.info(admin.getRole());
+
         // Access Token, Refresh Token 발급
-        String accessToken = jwtUtil.createAccessToken(admin.getEmail(), "ROLE_ADMIN");
-        String refreshToken = jwtUtil.createRefreshToken(admin.getEmail(), "ROLE_ADMIN");
+        String accessToken = jwtUtil.createAccessToken(admin.getEmail(), admin.getRole());
+        String refreshToken = jwtUtil.createRefreshToken(admin.getEmail(), admin.getRole());
 
         // Refresh Token 저장
         tokenService.saveRefreshToken(admin, refreshToken);
@@ -87,7 +91,7 @@ public class JwtAdminLoginFilter extends UsernamePasswordAuthenticationFilter {
         LoginResponse loginResponse = LoginResponse.builder()
                 .authId(admin.getId())
                 .email(admin.getEmail())
-                .role("ADMIN")
+                .role(admin.getRole())
                 .tokenDto(tokenDto)
                 .build();
 

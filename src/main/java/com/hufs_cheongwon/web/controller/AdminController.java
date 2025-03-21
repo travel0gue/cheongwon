@@ -30,7 +30,6 @@ public class AdminController {
     private final TokenService tokenService;
     private final JwtUtil jwtUtil;
     private final ResponseService responseService;
-    private final PetitionService petitionService;
 
     /**
      * 암호화된 비밀번호 받기
@@ -97,15 +96,5 @@ public class AdminController {
             @Valid @RequestBody ResponseCreateRequest responseCreateRequest
     ) {
         return ApiResponse.onSuccess(SuccessStatus.PETITION_STATUS_UPDATED, responseService.updateResponse(answerId, responseCreateRequest));
-    }
-
-    /**
-     * 청원 삭제
-     */
-    @DeleteMapping("/petition/{petition_id}/delete")
-    public ApiResponse<PetitionResponse> deletePetition(
-            @PathVariable("petition_id") Long petitionId
-    ) {
-        return ApiResponse.onSuccess(SuccessStatus.PETITION_DELETED, petitionService.deletePetition(petitionId));
     }
 }

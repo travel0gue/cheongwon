@@ -26,7 +26,7 @@ public class CustomAdminDetails implements UserDetails {
                 .admin(admin)
                 .email(admin.getEmail())
                 .password(admin.getPassword())
-                .authorities(List.of(new SimpleGrantedAuthority("ROLE_ADMIN")))
+                .authorities(List.of(new SimpleGrantedAuthority(admin.getRole())))
                 .build();
     }
 
@@ -40,7 +40,7 @@ public class CustomAdminDetails implements UserDetails {
             @Override
             public String getAuthority() {
 
-                return "ROLE_ADMIN";
+                return admin.getRole();
             }
         });
 
