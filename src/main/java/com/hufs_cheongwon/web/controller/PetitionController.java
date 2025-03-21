@@ -13,9 +13,11 @@ import com.hufs_cheongwon.service.PetitionService;
 import com.hufs_cheongwon.service.PetitionStatService;
 import com.hufs_cheongwon.web.apiResponse.ApiResponse;
 import com.hufs_cheongwon.web.apiResponse.success.SuccessStatus;
+import com.hufs_cheongwon.web.dto.PetitionSortType;
 import com.hufs_cheongwon.web.dto.request.PetitionCreateRequest;
 import com.hufs_cheongwon.web.dto.response.*;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -100,13 +102,18 @@ public class PetitionController {
     @GetMapping("/{petition_id}/view")
     public ApiResponse<PetitionResponse> getPetitionById(@PathVariable (name = "petition_id")Long id) {
 
-        List<Response> responses = responseRepository.findByPetitionId(id);
-        List<AnswerResponse> answerResponses = new ArrayList<>();
-        for(Response response : responses) {
-            answerResponses.add(AnswerResponse.from(response, response.getAdmin()));
+        Petition petition = petitionService.getPetitionById(id);
+
+        Optional<Response> responseOpt = responseRepository.findOptionalByPetitionId(id);
+
+        if (responseOpt.isPresent()) {
+            Response response = responseOpt.get();
+            return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
+                    PetitionResponse.from(petition, AnswerResponse.from(response, response.getAdmin())));
+        } else {
+            return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
+                    PetitionResponse.from(petition));
         }
-        return ApiResponse.onSuccess(SuccessStatus.PETITION_RETRIEVED,
-                PetitionResponse.from(petitionService.getPetitionById(id), answerResponses));
     }
 
     /**
@@ -132,10 +139,18 @@ public class PetitionController {
     @GetMapping("/ongoing")
     public ApiResponse<Page<PetitionResponse>> getOngoingPetitions(
             @RequestParam(name = "page",defaultValue = "0") int page,
-            @RequestParam(name = "size",defaultValue = "10") int size) {
+            @RequestParam(name = "size",defaultValue = "10") int size,
+            @RequestParam(name = "sort", defaultValue = "createdAt") @Valid PetitionSortType sortBy) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Petition> petitions = petitionRepository.findAllOngoingPetitions(pageable);
+        Page<Petition> petitions;
+
+        if (sortBy == PetitionSortType.AGREE_COUNT) {
+            petitions = petitionRepository.findAllOngoingPetitionsByAgreeCount(pageable);
+        } else {
+            petitions = petitionRepository.findAllOngoingPetitions(pageable);
+        }
+
         Page<PetitionResponse> petitionPage = petitions.map(PetitionResponse::from);
         return ApiResponse.onSuccess(SuccessStatus.ONGOING_PETITIONS_RETRIEVED, petitionPage);
     }
@@ -146,10 +161,18 @@ public class PetitionController {
     @GetMapping("/expired")
     public ApiResponse<Page<PetitionResponse>> getExpiredPetitions(
             @RequestParam(name = "page",defaultValue = "0") int page,
-            @RequestParam(name = "size",defaultValue = "10") int size) {
+            @RequestParam(name = "size",defaultValue = "10") int size,
+            @RequestParam(name = "sort", defaultValue = "createdAt") @Valid PetitionSortType sortBy) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Petition> petitions = petitionRepository.findAllExpiredPetitions(pageable);
+        Page<Petition> petitions;
+
+        if (sortBy == PetitionSortType.AGREE_COUNT) {
+            petitions = petitionRepository.findAllExpiredPetitionsByAgreeCount(pageable);
+        } else {
+            petitions = petitionRepository.findAllExpiredPetitions(pageable);
+        }
+
         Page<PetitionResponse> petitionPage = petitions.map(PetitionResponse::from);
         return ApiResponse.onSuccess(SuccessStatus.EXPIRED_PETITIONS_RETRIEVED, petitionPage);
     }
@@ -160,10 +183,18 @@ public class PetitionController {
     @GetMapping("/waiting")
     public ApiResponse<Page<PetitionResponse>> getWaitingPetitions(
             @RequestParam(name = "page",defaultValue = "0") int page,
-            @RequestParam(name = "size",defaultValue = "10") int size) {
+            @RequestParam(name = "size",defaultValue = "10") int size,
+            @RequestParam(name = "sort", defaultValue = "createdAt") @Valid PetitionSortType sortBy) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Petition> petitions = petitionRepository.findAllWaitingPetitions(pageable);
+        Page<Petition> petitions;
+
+        if (sortBy == PetitionSortType.AGREE_COUNT) {
+            petitions = petitionRepository.findAllWaitingPetitionsByAgreeCount(pageable);
+        } else {
+            petitions = petitionRepository.findAllWaitingPetitions(pageable);
+        }
+
         Page<PetitionResponse> petitionPage = petitions.map(PetitionResponse::from);
         return ApiResponse.onSuccess(SuccessStatus.WAITING_PETITIONS_RETRIEVED, petitionPage);
     }
@@ -174,10 +205,18 @@ public class PetitionController {
     @GetMapping("/answered")
     public ApiResponse<Page<PetitionResponse>> getAnsweredPetitions(
             @RequestParam(name = "page",defaultValue = "0") int page,
-            @RequestParam(name = "size",defaultValue = "10") int size) {
+            @RequestParam(name = "size",defaultValue = "10") int size,
+            @RequestParam(name = "sort", defaultValue = "createdAt") @Valid PetitionSortType sortBy) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Petition> petitions = petitionRepository.findAllAnsweredPetitions(pageable);
+        Page<Petition> petitions;
+
+        if (sortBy == PetitionSortType.AGREE_COUNT) {
+            petitions = petitionRepository.findAllAnsweredPetitionsByAgreeCount(pageable);
+        } else {
+            petitions = petitionRepository.findAllAnsweredPetitions(pageable);
+        }
+
         Page<PetitionResponse> petitionPage = petitions.map(PetitionResponse::from);
         return ApiResponse.onSuccess(SuccessStatus.ANSWERED_PETITIONS_RETRIEVED, petitionPage);
     }

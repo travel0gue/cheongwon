@@ -31,7 +31,7 @@ public class PetitionResponse {
     private List<String> links;
     private LocalDate createDate;
     private LocalDate endDate;
-    private List<AnswerResponse> answerResponses;
+    private AnswerResponse answerResponse;
 
     public static PetitionResponse from(Petition petition) {
         List<String> linkList = new ArrayList<>();
@@ -54,11 +54,11 @@ public class PetitionResponse {
                 .links(linkList)
                 .createDate(petition.getCreatedAt().toLocalDate())
                 .endDate(petition.getCreatedAt().toLocalDate().plus(Constant.PETITION_ACTIVE_PERIOD))
-                .answerResponses(null)
+                .answerResponse(null)
                 .build();
     }
 
-    public static PetitionResponse from(Petition petition, List<AnswerResponse> answerResponses) {
+    public static PetitionResponse from(Petition petition, AnswerResponse answerResponse) {
         List<String> linkList = new ArrayList<>();
         if (petition.getLinks() != null) {
             for (Link link : petition.getLinks()) {
@@ -79,7 +79,7 @@ public class PetitionResponse {
                 .links(linkList)
                 .createDate(petition.getCreatedAt().toLocalDate())
                 .endDate(petition.getCreatedAt().toLocalDate().plus(Constant.PETITION_ACTIVE_PERIOD))
-                .answerResponses(answerResponses)
+                .answerResponse(answerResponse)
                 .build();
     }
 }

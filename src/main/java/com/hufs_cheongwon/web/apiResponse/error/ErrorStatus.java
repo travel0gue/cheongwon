@@ -48,11 +48,13 @@ public enum ErrorStatus {
     ALREADY_REPORTED(HttpStatus.CONFLICT, StatusCode.PETITION.getCode(4006), "이미 신고한 청원입니다."),
 
     ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, StatusCode.ANSWER.getCode(4001), "해당 답변이 존재하지 않습니다."),
+    ALREADY_ANSWERED(HttpStatus.NOT_FOUND, StatusCode.ANSWER.getCode(4002), "이미 답변된 청원입니다."),
 
     ADMIN_NOT_FOUND(HttpStatus.BAD_REQUEST, StatusCode.ADMIN.getCode(4001), "관리자 계정을 찾을 수 없습니다."),
 
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, StatusCode.BOARD.getCode(4001), "해당 게시글이 존재하지 않습니다."),
     INVALID_BOARD_TYPE(HttpStatus.BAD_REQUEST, StatusCode.BOARD.getCode(4002), "잘못된 게시판 타입 요청입니다."),
+    KEY_WRONG(HttpStatus.BAD_REQUEST, StatusCode.BOARD.getCode(4003), "잘못된 key 입니다.")
     ;
 
 

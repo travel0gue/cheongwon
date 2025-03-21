@@ -72,7 +72,7 @@ public class JwtAdminLoginFilter extends UsernamePasswordAuthenticationFilter {
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Strict")
+                .sameSite("None")
                 .maxAge(Constant.REFRESH_COOKIE_EXPIRATION) // 14일(7 * 24 * 60 * 60)
                 .path("/")
                 .build();
