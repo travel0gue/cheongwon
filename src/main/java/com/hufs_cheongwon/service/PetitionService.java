@@ -8,6 +8,7 @@ import com.hufs_cheongwon.repository.*;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import com.hufs_cheongwon.web.dto.request.PetitionCreateRequest;
 import com.hufs_cheongwon.web.dto.response.AnswerResponse;
+import com.hufs_cheongwon.web.dto.response.PetitionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -141,5 +142,16 @@ public class PetitionService {
      */
     public boolean hasUserReportedPetition(Long userId, Long petitionId) {
         return reportRepository.existsByUsersIdAndPetitionId(userId, petitionId);
+    }
+
+    /**
+     * 관리자가 청원 삭제
+     */
+    @Transactional
+    public PetitionResponse deletePetition(Long petitionId) {
+        Petition petition = petitionRepository.findById(petitionId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.PETITION_NOT_FOUND));
+        petitionRepository.deleteById(petitionId);
+        return PetitionResponse.from(petition);
     }
 }

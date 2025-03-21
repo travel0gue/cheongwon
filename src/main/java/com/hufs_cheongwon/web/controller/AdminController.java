@@ -4,6 +4,7 @@ import com.hufs_cheongwon.common.security.CustomAdminDetails;
 import com.hufs_cheongwon.common.security.JwtUtil;
 import com.hufs_cheongwon.domain.Admin;
 import com.hufs_cheongwon.domain.Response;
+import com.hufs_cheongwon.service.PetitionService;
 import com.hufs_cheongwon.service.ResponseService;
 import com.hufs_cheongwon.service.TokenService;
 import com.hufs_cheongwon.web.apiResponse.ApiResponse;
@@ -12,6 +13,7 @@ import com.hufs_cheongwon.web.dto.request.LoginRequest;
 import com.hufs_cheongwon.web.dto.request.ResponseCreateRequest;
 import com.hufs_cheongwon.web.dto.response.AnswerResponse;
 import com.hufs_cheongwon.web.dto.response.LoginResponse;
+import com.hufs_cheongwon.web.dto.response.PetitionResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class AdminController {
     private final TokenService tokenService;
     private final JwtUtil jwtUtil;
     private final ResponseService responseService;
+    private final PetitionService petitionService;
 
     /**
      * 암호화된 비밀번호 받기
@@ -94,5 +97,15 @@ public class AdminController {
             @Valid @RequestBody ResponseCreateRequest responseCreateRequest
     ) {
         return ApiResponse.onSuccess(SuccessStatus.PETITION_STATUS_UPDATED, responseService.updateResponse(answerId, responseCreateRequest));
+    }
+
+    /**
+     * 청원 삭제
+     */
+    @DeleteMapping("/petition/{petition_id}/delete")
+    public ApiResponse<PetitionResponse> deletePetition(
+            @PathVariable("petition_id") Long petitionId
+    ) {
+        return ApiResponse.onSuccess(SuccessStatus.PETITION_DELETED, petitionService.deletePetition(petitionId));
     }
 }
