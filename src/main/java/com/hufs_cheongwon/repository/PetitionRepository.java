@@ -20,11 +20,17 @@ public interface PetitionRepository extends JpaRepository<Petition, Long> {
 
     Page<Petition> findByPetitionStatusOrderByCreatedAtDesc(PetitionStatus status, Pageable pageable);
 
+    Page<Petition> findByPetitionStatusOrderByAgreeCountDesc(PetitionStatus status, Pageable pageable);
+
     /**
      * 진행중인 청원 가져오기
      */
     default Page<Petition> findAllOngoingPetitions(Pageable pageable) {
         return findByPetitionStatusOrderByCreatedAtDesc(PetitionStatus.ONGOING, pageable);
+    }
+
+    default Page<Petition> findAllOngoingPetitionsByAgreeCount(Pageable pageable) {
+        return findByPetitionStatusOrderByAgreeCountDesc(PetitionStatus.ONGOING, pageable);
     }
 
     /**
@@ -34,6 +40,10 @@ public interface PetitionRepository extends JpaRepository<Petition, Long> {
         return findByPetitionStatusOrderByCreatedAtDesc(PetitionStatus.EXPIRED, pageable);
     }
 
+    default Page<Petition> findAllExpiredPetitionsByAgreeCount(Pageable pageable) {
+        return findByPetitionStatusOrderByAgreeCountDesc(PetitionStatus.EXPIRED, pageable);
+    }
+
     /**
      * 대기중인 청원 가져오기 (WAITING 상태)
      */
@@ -41,11 +51,19 @@ public interface PetitionRepository extends JpaRepository<Petition, Long> {
         return findByPetitionStatusOrderByCreatedAtDesc(PetitionStatus.WAITING, pageable);
     }
 
+    default Page<Petition> findAllWaitingPetitionsByAgreeCount(Pageable pageable) {
+        return findByPetitionStatusOrderByAgreeCountDesc(PetitionStatus.WAITING, pageable);
+    }
+
     /**
      * 답변된 청원 가져오기 (ANSWER_COMPLETED 상태)
      */
     default Page<Petition> findAllAnsweredPetitions(Pageable pageable) {
         return findByPetitionStatusOrderByCreatedAtDesc(PetitionStatus.ANSWER_COMPLETED, pageable);
+    }
+
+    default Page<Petition> findAllAnsweredPetitionsByAgreeCount(Pageable pageable) {
+        return findByPetitionStatusOrderByAgreeCountDesc(PetitionStatus.ANSWER_COMPLETED, pageable);
     }
 
     // 제목 또는 내용에 키워드가 포함된 청원 검색
