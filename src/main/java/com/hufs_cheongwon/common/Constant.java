@@ -9,4 +9,6 @@ public class Constant {
     public static final Period PETITION_ACTIVE_PERIOD = Period.ofDays(30);
 
     public static final Integer THRESHOLDAGREEMENT = 10;
+
+    public static final Integer EXPIRED_DATE = 1;
 }

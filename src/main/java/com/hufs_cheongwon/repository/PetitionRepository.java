@@ -2,6 +2,7 @@ package com.hufs_cheongwon.repository;
 
 import com.hufs_cheongwon.domain.Petition;
 import com.hufs_cheongwon.domain.enums.PetitionStatus;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -85,4 +86,10 @@ public interface PetitionRepository extends JpaRepository<Petition, Long> {
      * 특정 상태의 청원 수 조회
      */
     long countByPetitionStatus(PetitionStatus status);
+
+    /**
+     * 30일이 경과하고 ONGOING 상태인 청원 조회
+     */
+    @Query("SELECT p FROM Petition p WHERE p.petitionStatus = 'ONGOING' AND p.createdAt <= :date")
+    List<Petition> findExpiredOngoingPetitions(@Param("date") LocalDateTime date);
 }
