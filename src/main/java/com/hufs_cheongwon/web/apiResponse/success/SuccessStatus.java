@@ -35,7 +35,7 @@ public enum SuccessStatus {
     EMAIL_VERIFIED(HttpStatus.OK, StatusCode.EMAIL.getCode(2004), "이메일이 인증되었습니다."),
 
     PETITION_CREATED(HttpStatus.CREATED, StatusCode.PETITION.getCode(2001), "청원이 성공적으로 등록되었습니다."),
-    PETITION_DELETED(HttpStatus.OK, StatusCode.PETITION.getCode(2002), "청원이 성공적으로 삭제되었습니다."),
+    PETITION_DELETED(HttpStatus.OK, StatusCode.PETITION.getCode(2002), "[관리자] 청원이 성공적으로 삭제되었습니다."),
     PETITION_RETRIEVED(HttpStatus.OK, StatusCode.PETITION.getCode(2003), "청원이 성공적으로 조회되었습니다."),
     PETITIONS_RETRIEVED(HttpStatus.OK, StatusCode.PETITION.getCode(2004), "청원 목록이 성공적으로 조회되었습니다."),
     PETITION_UPDATED(HttpStatus.OK, StatusCode.PETITION.getCode(2005), "청원이 성공적으로 수정되었습니다."),

@@ -37,9 +37,9 @@ public class RefreshToken extends BaseTimeEntity {
 
     public String getRole() {
         if (users != null && admin == null) {
-            return "ROLE_USER";
+            return users.getRole();
         } else if (users == null && admin != null) {
-            return "ROLE_ADMIN";
+            return admin.getRole();
         } else {
             return null;
         }

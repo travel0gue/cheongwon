@@ -4,6 +4,7 @@ import com.hufs_cheongwon.common.security.CustomAdminDetails;
 import com.hufs_cheongwon.common.security.JwtUtil;
 import com.hufs_cheongwon.domain.Admin;
 import com.hufs_cheongwon.domain.Response;
+import com.hufs_cheongwon.service.PetitionService;
 import com.hufs_cheongwon.service.ResponseService;
 import com.hufs_cheongwon.service.TokenService;
 import com.hufs_cheongwon.web.apiResponse.ApiResponse;
@@ -12,6 +13,7 @@ import com.hufs_cheongwon.web.dto.request.LoginRequest;
 import com.hufs_cheongwon.web.dto.request.ResponseCreateRequest;
 import com.hufs_cheongwon.web.dto.response.AnswerResponse;
 import com.hufs_cheongwon.web.dto.response.LoginResponse;
+import com.hufs_cheongwon.web.dto.response.PetitionResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +55,7 @@ public class AdminController {
      * 관리자 로그아웃
      */
     @PostMapping("/logout")
-    public ApiResponse<Admin> logoutUser(HttpServletRequest request, @AuthenticationPrincipal CustomAdminDetails customAdminDetails) {
+    public ApiResponse<Void> logoutUser(HttpServletRequest request, @AuthenticationPrincipal CustomAdminDetails customAdminDetails) {
 
         //헤더에서 access token 추출
         String accessToken = jwtUtil.resolveAccessToken(request);
@@ -61,7 +63,7 @@ public class AdminController {
 
         //access token 블랙리스트 등록 & refresh token 삭제
         tokenService.destroyToken(username, accessToken);
-        return ApiResponse.onSuccess(SuccessStatus.ADMIN_LOGOUT_SUCCESS, customAdminDetails.getAdmin());
+        return ApiResponse.onSuccess(SuccessStatus.ADMIN_LOGOUT_SUCCESS, null);
     }
 
     /**
