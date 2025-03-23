@@ -9,7 +9,7 @@ import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import com.hufs_cheongwon.web.dto.request.EmailCertifyRequest;
 import com.hufs_cheongwon.web.dto.request.EmailSendRequest;
 import com.hufs_cheongwon.web.dto.request.LoginRequest;
-import com.hufs_cheongwon.web.dto.response.SignupResponse;
+import com.hufs_cheongwon.web.dto.response.AuthInfoResponse;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -36,21 +36,20 @@ public class UsersService {
     private final TemplateEngine templateEngine;
     private final CacheService cacheService;
 
-    public SignupResponse registerUser(LoginRequest request, String tokenEmail) throws IOException{
-
+    public AuthInfoResponse registerUser(LoginRequest request, String tokenEmail) throws IOException{
         String email = request.getEmail();
         String password = request.getPassword();
 
+        // 인증된 이메일인지 확인
+        if (!tokenEmail.equals(email)) {
+            throw new ResourceNotFoundException(ErrorStatus.EMAIL_UNCERTIFIED);
+        }
+        System.out.println(tokenEmail+email);
         // 존재하는 이메일인지 확인
         Boolean isExist = usersRepository.existsByEmail(email);
         if (isExist){
 
             throw new DuplicateResourceException(ErrorStatus.EMAIL_DUPLICATED);
-        }
-        System.out.println(tokenEmail+email);
-        // 인증된 이메일인지 확인
-        if (!tokenEmail.equals(email)) {
-            throw new ResourceNotFoundException(ErrorStatus.EMAIL_UNCERTIFIED);
         }
 
         Users newUser = Users.builder()
@@ -60,7 +59,7 @@ public class UsersService {
         newUser.setEncodedPassword(bCryptPasswordEncoder.encode(password));
         Users user = usersRepository.save(newUser);
 
-        return SignupResponse.builder()
+        return AuthInfoResponse.builder()
                 .userId(user.getId())
                 .role(user.getRole())
                 .email(user.getEmail())
@@ -114,11 +113,29 @@ public class UsersService {
     }
 
     public void withdrawUser(String username, String token) {
-
         // access token 블랙리스트 등록 & refresh token 삭제
         tokenService.destroyToken(username, token);
         // 디비에서 user 정보 삭제
         usersRepository.deleteByEmail(username);
+    }
+
+    public AuthInfoResponse updatePassword(LoginRequest request, String tokenEmail) {
+        String email = request.getEmail();
+        String password = request.getPassword();
+        // 인증된 이메일인지 확인
+        if (!tokenEmail.equals(email)) {
+            throw new ResourceNotFoundException(ErrorStatus.EMAIL_UNCERTIFIED);
+        }
+        // 가입된 사용자인지 확인
+        Users user = usersRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND));
+        // 비밀번호 변경
+        user.setEncodedPassword((bCryptPasswordEncoder.encode(password)));
+        return AuthInfoResponse.builder()
+                .userId(user.getId())
+                .role(user.getRole())
+                .email(user.getEmail())
+                .build();
     }
 
     private String generateAuthCode() {

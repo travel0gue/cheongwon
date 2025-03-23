@@ -4,7 +4,6 @@ import com.hufs_cheongwon.common.Constant;
 import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.common.security.CustomUserDetails;
 import com.hufs_cheongwon.common.security.JwtUtil;
-import com.hufs_cheongwon.domain.Users;
 import com.hufs_cheongwon.service.TokenService;
 import com.hufs_cheongwon.service.UsersService;
 import com.hufs_cheongwon.web.apiResponse.ApiResponse;
@@ -14,7 +13,7 @@ import com.hufs_cheongwon.web.dto.request.EmailCertifyRequest;
 import com.hufs_cheongwon.web.dto.request.EmailSendRequest;
 import com.hufs_cheongwon.web.dto.request.LoginRequest;
 import com.hufs_cheongwon.web.dto.response.LoginResponse;
-import com.hufs_cheongwon.web.dto.response.SignupResponse;
+import com.hufs_cheongwon.web.dto.response.AuthInfoResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -24,7 +23,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,10 +43,10 @@ public class UserController {
      * 회원가입
      */
     @PostMapping("/register")
-    public ApiResponse<SignupResponse> registerUser(@Valid @RequestBody LoginRequest request,
-                                                    @CookieValue(name = "email_token") String emailToken) throws IOException{
+    public ApiResponse<AuthInfoResponse> registerUser(@Valid @RequestBody LoginRequest request,
+                                                      @CookieValue(name = "email_token") String emailToken) throws IOException{
         String tokenEmail = jwtUtil.getUsername(emailToken);
-        SignupResponse response = usersService.registerUser(request, tokenEmail);
+        AuthInfoResponse response = usersService.registerUser(request, tokenEmail);
         return ApiResponse.onSuccess(SuccessStatus.SIGN_IN_SUCCESS, response);
     }
 
@@ -56,7 +54,7 @@ public class UserController {
      * 이메일 인증 코드 전송
      */
     @PostMapping("/code/send")
-    public ApiResponse<Map<String, Object>> sendEmail(@Valid @RequestBody EmailSendRequest request) throws IOException {
+    public ApiResponse<Void> sendEmail(@Valid @RequestBody EmailSendRequest request) throws IOException {
 
         usersService.sendEmailCode(request);
         return ApiResponse.onSuccess(SuccessStatus.EMAIL_SENT, null);
@@ -136,6 +134,17 @@ public class UserController {
         usersService.withdrawUser(username, accessToken);
 
         return ApiResponse.onSuccess(SuccessStatus.USER_SING_OUT_SUCCESS, null);
+    }
+
+    /**
+     * 비밀 번호 찾기 위한 본인 인증
+     */
+    @PostMapping("/pwd/update")
+    public ApiResponse<AuthInfoResponse> updatePassword(@Valid @RequestBody LoginRequest request,
+                                                        @CookieValue(name = "email_token") String emailToken) throws IOException{
+        String tokenEmail = jwtUtil.getUsername(emailToken);
+        AuthInfoResponse response = usersService.updatePassword(request, tokenEmail);
+        return ApiResponse.onSuccess(SuccessStatus.USER_PASSWORD_UPDATE_SUCCESS, response);
     }
 
     @GetMapping("/test")
