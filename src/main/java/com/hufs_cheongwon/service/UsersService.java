@@ -4,7 +4,7 @@ import com.hufs_cheongwon.common.Util;
 import com.hufs_cheongwon.common.exception.DuplicateResourceException;
 import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.domain.Users;
-import com.hufs_cheongwon.domain.enums.Status;
+import com.hufs_cheongwon.domain.enums.UsersStatus;
 import com.hufs_cheongwon.repository.UsersRepository;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import com.hufs_cheongwon.web.dto.request.EmailCertifyRequest;
@@ -39,6 +39,9 @@ public class UsersService {
     private final TemplateEngine templateEngine;
     private final CacheService cacheService;
 
+    /**
+     * 회원가입
+     */
     public AuthInfoResponse registerUser(LoginRequest request, String tokenEmail) throws IOException{
         String email = request.getEmail();
         String password = request.getPassword();
@@ -60,7 +63,7 @@ public class UsersService {
 
         Users newUser = Users.builder()
                 .email(email)
-                .status(Status.ACTIVE)
+                .usersStatus(UsersStatus.ACTIVE)
                 .build();
         newUser.setEncodedPassword(bCryptPasswordEncoder.encode(password));
         Users user = usersRepository.save(newUser);
@@ -74,6 +77,9 @@ public class UsersService {
                 .build();
     }
 
+    /**
+     * 이메일 인증 코드 전송
+     */
     @Cacheable("MyCache")
     public void sendEmailCode(EmailSendRequest request) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -109,6 +115,9 @@ public class UsersService {
         }
     }
 
+    /**
+     * 인증 코드 인증
+     */
     @Cacheable("MyCache")
     public void certifyEmailCode(EmailCertifyRequest request) {
         String email = request.getEmail();
@@ -129,6 +138,9 @@ public class UsersService {
         log.info("[인증 성공] 이메일: {}", Util.maskEmail(email));
     }
 
+    /**
+     * 회원 탈퇴
+     */
     public void withdrawUser(String username, String token) {
         log.info("[회원 탈퇴 요청] 사용자: {}", Util.maskEmail(username));
         // access token 블랙리스트 등록 & refresh token 삭제
@@ -138,6 +150,9 @@ public class UsersService {
         log.info("[회원 탈퇴 완료] 사용자: {}", Util.maskEmail(username));
     }
 
+    /**
+     * 비밀번호 변경
+     */
     public AuthInfoResponse updatePassword(LoginRequest request, String tokenEmail) {
         String email = request.getEmail();
         String password = request.getPassword();
@@ -161,6 +176,9 @@ public class UsersService {
                 .build();
     }
 
+    /**
+     * 인증코드 생성
+     */
     private String generateAuthCode() {
         SecureRandom secureRandom = new SecureRandom();
         StringBuilder authCode = new StringBuilder();
