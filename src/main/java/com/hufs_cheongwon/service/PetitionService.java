@@ -68,7 +68,7 @@ public class PetitionService {
     }
 
     /**
-            * 청원 동의하기
+     * 청원 동의하기
      */
     @Transactional
     public Agreement agreePetition(Long petitionId, Long userId) {

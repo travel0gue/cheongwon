@@ -92,4 +92,7 @@ public interface PetitionRepository extends JpaRepository<Petition, Long> {
      */
     @Query("SELECT p FROM Petition p WHERE p.petitionStatus = 'ONGOING' AND p.createdAt <= :date")
     List<Petition> findExpiredOngoingPetitions(@Param("date") LocalDateTime date);
+
+    @Query("SELECT r.petition FROM Response r WHERE r.id = :responseId")
+    Petition findPetitionByResponseId(@Param("responseId") Long responseId);
 }
