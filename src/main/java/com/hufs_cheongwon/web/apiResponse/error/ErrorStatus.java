@@ -30,7 +30,7 @@ public enum ErrorStatus {
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, StatusCode.USER.getCode(4009), "닉네임은 필수입니다."),
     KEY_NOT_FOUNT(HttpStatus.BAD_REQUEST, StatusCode.USER.getCode(4010), "존재하지 않는 키 값입니다."),
     AUTH_CODE_INVALID(HttpStatus.BAD_REQUEST, StatusCode.USER.getCode(4011), "잘못된 인증 코드입니다."),
-    TOKEN_INVALID(HttpStatus.BAD_REQUEST, StatusCode.USER.getCode(4012), "유효하지 않은 토큰입니다."),
+    TOKEN_INVALID(HttpStatus.BAD_REQUEST, StatusCode.USER.getCode(4012), "로그인이 필요합니다."),
     TOKEN_EXPIRATION(HttpStatus.BAD_REQUEST, StatusCode.USER.getCode(4013), "만료된 토큰입니다."),
     EMAIL_UNCERTIFIED(HttpStatus.UNAUTHORIZED, StatusCode.USER.getCode(4014), "인증되지 않은 이메일입니다."),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, StatusCode.USER.getCode(4015), "존재하지 않는 리프레쉬 토큰입니다."),

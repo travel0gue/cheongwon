@@ -12,6 +12,7 @@ import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import com.hufs_cheongwon.web.dto.response.LoginResponse;
 import com.hufs_cheongwon.web.dto.TokenDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.time.Instant;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class TokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;

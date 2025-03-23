@@ -72,6 +72,7 @@ public class ResponseService {
         Response response = responseRepository.findById(answerId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.ANSWER_NOT_FOUND));
         responseRepository.deleteById(answerId);
+
         return AnswerResponse.from(response, response.getAdmin());
     }
 

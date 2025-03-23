@@ -1,10 +1,13 @@
 package com.hufs_cheongwon.common.security;
 
+import com.hufs_cheongwon.common.Constant;
+import com.hufs_cheongwon.common.Util;
 import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.domain.Users;
 import com.hufs_cheongwon.repository.UsersRepository;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UsersRepository usersRepository;
@@ -20,11 +24,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        System.out.println("커스텀 유저 디테일");
+        log.info("[Authentication] 사용자 CustomUserDetailsService - 입력 이메일: {}", Util.maskEmail(username));
 
         Users user = usersRepository.findByEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND));
-
+                .orElseThrow(() -> {
+                    log.warn("[Authentication] 사용자 정보 없음 - 이메일: {}", Util.maskEmail(username));
+                    return new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND);
+                });
         return CustomUserDetails.from(user);
     }
 }
