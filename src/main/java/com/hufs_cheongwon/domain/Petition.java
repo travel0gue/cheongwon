@@ -49,7 +49,7 @@ public class Petition extends BaseTimeEntity{
     @JoinColumn(name = "users_id", nullable = false)
     private Users users; // 작성자
 
-    @OneToOne(mappedBy = "petition", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "petition", cascade = CascadeType.ALL)
     private Response response;
 
     @OneToMany(mappedBy = "petition", cascade = CascadeType.ALL)
@@ -101,8 +101,7 @@ public class Petition extends BaseTimeEntity{
         this.links.add(link);
         link.setPetition(this);
     }
-
-    public void addLinks(List<Link> links) {
-        this.links.addAll(links);
+    public void removeResponse() {
+        this.response = null;
     }
 }
