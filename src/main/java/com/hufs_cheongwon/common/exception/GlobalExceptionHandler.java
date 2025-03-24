@@ -9,6 +9,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -46,6 +47,7 @@ public class GlobalExceptionHandler {
         log.error("[MethodArgumentNotValidException] {}", validationErrors);
 
         ErrorResponse errorResponse = ErrorStatus._BAD_REQUEST.getReason();
+        errorResponse.setMessage("입력값 검증에 실패했습니다");
         errorResponse.setValidation(validationErrors);
 
         return ResponseEntity.status(ErrorStatus._BAD_REQUEST.getHttpStatus())
@@ -58,8 +60,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("[HttpMessageNotReadableException] {}", e.getMessage());
+
+        ErrorResponse errorResponse = ErrorStatus._BAD_REQUEST.getReason();
+        errorResponse.setMessage("요청 본문을 파싱할 수 없습니다: " + e.getMessage());
+
         return ResponseEntity.status(ErrorStatus._BAD_REQUEST.getHttpStatus())
-                .body(ErrorStatus._BAD_REQUEST.getReason());
+                .body(errorResponse);
     }
 
     /**
@@ -75,6 +81,7 @@ public class GlobalExceptionHandler {
         log.error("[BindException] {}", validationErrors);
 
         ErrorResponse errorResponse = ErrorStatus._BAD_REQUEST.getReason();
+        errorResponse.setMessage("데이터 바인딩에 실패했습니다");
         errorResponse.setValidation(validationErrors);
 
         return ResponseEntity.status(ErrorStatus._BAD_REQUEST.getHttpStatus())
@@ -87,8 +94,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         log.error("[MissingServletRequestParameterException] {}", e.getMessage());
+
+        ErrorResponse errorResponse = ErrorStatus._BAD_REQUEST.getReason();
+        errorResponse.setMessage("필수 파라미터가 누락되었습니다: " + e.getParameterName() + " (" + e.getParameterType() + ")");
+
+        Map<String, String> details = new HashMap<>();
+        details.put(e.getParameterName(), "이 파라미터는 필수입니다");
+        errorResponse.setValidation(details);
+
         return ResponseEntity.status(ErrorStatus._BAD_REQUEST.getHttpStatus())
-                .body(ErrorStatus._BAD_REQUEST.getReason());
+                .body(errorResponse);
     }
 
     /**
@@ -138,7 +153,26 @@ public class GlobalExceptionHandler {
         log.error("[ConstraintViolationException] {}", validationErrors);
 
         ErrorResponse errorResponse = ErrorStatus._BAD_REQUEST.getReason();
+        errorResponse.setMessage(e.getMessage()); // 예외에서 발생한 메시지 그대로 사용
         errorResponse.setValidation(validationErrors);
+
+        return ResponseEntity.status(ErrorStatus._BAD_REQUEST.getHttpStatus())
+                .body(errorResponse);
+    }
+
+    /**
+     * 쿠키 누락 또는 값 오류 처리
+     */
+    @ExceptionHandler(MissingRequestCookieException.class)
+    public ResponseEntity<ErrorResponse> handleMissingRequestCookieException(MissingRequestCookieException e) {
+        log.error("[MissingRequestCookieException] {}", e.getMessage());
+
+        ErrorResponse errorResponse = ErrorStatus._BAD_REQUEST.getReason();
+        errorResponse.setMessage(e.getMessage()); // 원본 에러 메시지 사용
+
+        Map<String, String> details = new HashMap<>();
+        details.put(e.getCookieName(), "쿠키가 누락되었거나 값이 잘못되었습니다");
+        errorResponse.setValidation(details);
 
         return ResponseEntity.status(ErrorStatus._BAD_REQUEST.getHttpStatus())
                 .body(errorResponse);

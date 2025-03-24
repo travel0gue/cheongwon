@@ -7,21 +7,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
+import lombok.Setter;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 public class ErrorResponse {
 
     private Boolean isSuccess;
     private String code;
     private String message;
 
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Map<String, String> validation;
 
-    public void setValidation(Map<String, String> validation) {
-        this.validation = validation;
-    }
 }
