@@ -69,9 +69,14 @@ public class ResponseService {
 
     @Transactional
     public AnswerResponse deleteResponse(Long answerId) {
+        Petition petition = petitionRepository.findPetitionByResponseId(answerId)
+                        .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.PETITION_NOT_FOUND));
+        petition.changePetitionStatus(PetitionStatus.WAITING);
+        petition.removeResponse();
         Response response = responseRepository.findById(answerId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.ANSWER_NOT_FOUND));
         responseRepository.deleteById(answerId);
+
         return AnswerResponse.from(response, response.getAdmin());
     }
 

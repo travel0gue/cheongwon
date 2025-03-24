@@ -1,6 +1,6 @@
 package com.hufs_cheongwon.domain;
 
-import com.hufs_cheongwon.domain.enums.Status;
+import com.hufs_cheongwon.domain.enums.UsersStatus;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class Users extends BaseTimeEntity {
     @Column
     @Setter
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private UsersStatus usersStatus;
 
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Petition> petitions = new ArrayList<>();
@@ -58,7 +58,7 @@ public class Users extends BaseTimeEntity {
         this.password = password;
         this.name = name;
         this.studentNumber = studentNumber;
-        this.status = Status.ACTIVE;
+        this.usersStatus = UsersStatus.ACTIVE;
     }
 
     /**
@@ -82,5 +82,12 @@ public class Users extends BaseTimeEntity {
 
     public String getRole() {
         return "ROLE_USER";
+    }
+
+    /**
+     * 비즈니스 메소드
+     */
+    public void changeUserStatus(UsersStatus status){
+        this.usersStatus = status;
     }
 }

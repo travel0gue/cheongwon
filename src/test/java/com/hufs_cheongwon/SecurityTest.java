@@ -5,7 +5,7 @@ import com.hufs_cheongwon.common.security.JwtUtil;
 import com.hufs_cheongwon.domain.Admin;
 import com.hufs_cheongwon.domain.RefreshToken;
 import com.hufs_cheongwon.domain.Users;
-import com.hufs_cheongwon.domain.enums.Status;
+import com.hufs_cheongwon.domain.enums.UsersStatus;
 import com.hufs_cheongwon.repository.AdminRepository;
 import com.hufs_cheongwon.repository.RefreshTokenRepository;
 import com.hufs_cheongwon.repository.UsersRepository;
@@ -75,7 +75,7 @@ class SecurityTest {
                 .password(passwordEncoder.encode(PASSWORD))  // 비밀번호 암호화
                 .name("User Test")
                 .studentNumber("20230001")
-                .status(Status.ACTIVE)
+                .usersStatus(UsersStatus.ACTIVE)
                 .build();
         userRepository.save(user);
 

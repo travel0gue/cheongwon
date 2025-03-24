@@ -2,6 +2,7 @@ package com.hufs_cheongwon.common.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hufs_cheongwon.common.Constant;
+import com.hufs_cheongwon.common.Util;
 import com.hufs_cheongwon.common.exception.AuthenticationException;
 import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.domain.Admin;
@@ -43,6 +44,7 @@ public class JwtAdminLoginFilter extends UsernamePasswordAuthenticationFilter {
         try {
             LoginRequest loginRequest = objectMapper.readValue(request.getInputStream(),
                     LoginRequest.class);
+            log.info("[Authentication] 관리자 로그인 필터 - 이메일: {}", Util.maskEmail(loginRequest.getEmail()));
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     loginRequest.getEmail(), loginRequest.getPassword(), null);
@@ -51,6 +53,7 @@ public class JwtAdminLoginFilter extends UsernamePasswordAuthenticationFilter {
             return authenticationManager.authenticate(authToken);
 
         } catch (IOException e) {
+            log.error("[Authentication] 로그인 요청 파싱 실패: {}", e.getMessage());
             throw new RuntimeException("Failed to parse authentication request body", e);
         }
     }
@@ -63,7 +66,8 @@ public class JwtAdminLoginFilter extends UsernamePasswordAuthenticationFilter {
         CustomAdminDetails customAdminDetails = (CustomAdminDetails)authentication.getPrincipal();
         Admin admin = customAdminDetails.getAdmin();
 
-        log.info(admin.getRole());
+        log.info("[Authentication] 관리자 로그인 성공 - adminId: {}, 이메일: {}, 역할: {}",
+                admin.getId(), Util.maskEmail(admin.getEmail()), admin.getRole());
 
         // Access Token, Refresh Token 발급
         String accessToken = jwtUtil.createAccessToken(admin.getEmail(), admin.getRole());
@@ -103,14 +107,18 @@ public class JwtAdminLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, org.springframework.security.core.AuthenticationException failed) throws IOException, ServletException {
+        log.warn("[Authentication] 로그인 실패 - 사유: {}", failed.getMessage());
 
         AuthenticationException exception = new AuthenticationException(objectMapper);
 
         if (failed.getCause() instanceof ResourceNotFoundException) {
+            log.warn("[Authentication] 로그인 실패 - 관리자 정보 없음");
             exception.sendErrorResponse(response, ErrorStatus.ADMIN_NOT_FOUND);
         } else if (failed instanceof BadCredentialsException) {
+            log.warn("[Authentication] 로그인 실패 - 비밀번호 불일치");
             exception.sendErrorResponse(response, ErrorStatus.PASSWORD_WRONG);
         } else {
+            log.error("[Authentication] 로그인 실패 - 알 수 없는 에러");
             exception.sendErrorResponse(response, ErrorStatus._LOGIN_FAILURE);
         }
     }

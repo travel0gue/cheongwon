@@ -52,7 +52,7 @@ public class SecurityConfig {
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/admin/login","/admin/pwd","/user/test").permitAll()
+                        .requestMatchers("/admin/login","/admin/pwd","/user/test","/user/pwd/update").permitAll()
                         .requestMatchers("/petitions/{petition_id}/agree", "/petitions/{petition_id}/report", "/petitions/new", "/user/logout", "/user/delete").hasRole("USER")
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER")
                         .requestMatchers("/super/**").hasRole("SUPER")

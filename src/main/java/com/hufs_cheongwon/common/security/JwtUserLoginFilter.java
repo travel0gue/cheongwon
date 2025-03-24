@@ -2,6 +2,7 @@ package com.hufs_cheongwon.common.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hufs_cheongwon.common.Constant;
+import com.hufs_cheongwon.common.Util;
 import com.hufs_cheongwon.common.exception.AuthenticationException;
 import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.domain.Users;
@@ -17,6 +18,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +30,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 
 @RequiredArgsConstructor
+@Slf4j
 public class JwtUserLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
@@ -41,8 +44,7 @@ public class JwtUserLoginFilter extends UsernamePasswordAuthenticationFilter {
         try {
             LoginRequest loginRequest = objectMapper.readValue(request.getInputStream(),
                     LoginRequest.class);
-
-            System.out.println("사용자 로그인 필터");
+            log.info("[Authentication] 사용자 로그인 필터 - 이메일: {}", Util.maskEmail(loginRequest.getEmail()));
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     loginRequest.getEmail(), loginRequest.getPassword(), null);
@@ -50,6 +52,7 @@ public class JwtUserLoginFilter extends UsernamePasswordAuthenticationFilter {
             //authenticationManager가 이메일, 비밀번호로 검증을 진행
             return authenticationManager.authenticate(authToken);
         } catch (IOException e) {
+            log.error("[Authentication] 로그인 요청 파싱 실패: {}", e.getMessage());
             throw new RuntimeException("Failed to parse authentication request body", e);
         }
     }
@@ -60,6 +63,7 @@ public class JwtUserLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         CustomUserDetails customUserDetails = (CustomUserDetails)authentication.getPrincipal();
         Users user = customUserDetails.getUser();
+        log.info("[Authentication] 사용자 로그인 성공 - userId: {}, 이메일: {}", user.getId(), Util.maskEmail(user.getEmail()));
 
         // Access Token, Refresh Token 발급
         String accessToken = jwtUtil.createAccessToken(user.getEmail(), "ROLE_USER");
@@ -99,14 +103,17 @@ public class JwtUserLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, org.springframework.security.core.AuthenticationException failed) throws IOException, ServletException {
-
+        log.warn("[Authentication] 로그인 실패 - 사유: {}", failed.getMessage());
         AuthenticationException exception = new AuthenticationException(objectMapper);
 
         if (failed.getCause() instanceof ResourceNotFoundException) {
+            log.warn("[Authentication] 로그인 실패 - 사용자 정보 없음");
             exception.sendErrorResponse(response, ErrorStatus.USER_NOT_FOUND);
         } else if (failed instanceof BadCredentialsException) {
+            log.warn("[Authentication] 로그인 실패 - 비밀번호 불일치");
             exception.sendErrorResponse(response, ErrorStatus.PASSWORD_WRONG);
         } else {
+            log.error("[Authentication] 로그인 실패 - 알 수 없는 오류");
             exception.sendErrorResponse(response, ErrorStatus._LOGIN_FAILURE);
         }
     }
