@@ -95,4 +95,9 @@ public interface PetitionRepository extends JpaRepository<Petition, Long> {
 
     @Query("SELECT r.petition FROM Response r WHERE r.id = :responseId")
     Optional<Petition> findPetitionByResponseId(@Param("responseId") Long responseId);
+
+    /**
+     * 특정 사용자가 작성한 청원 중 가장 최근에 작성된 청원 하나를 조회합니다
+     */
+    Optional<Petition> findTopByIdOrderByCreatedAtDesc(Long userId);
 }
