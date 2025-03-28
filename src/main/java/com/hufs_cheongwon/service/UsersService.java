@@ -139,15 +139,17 @@ public class UsersService {
     }
 
     /**
-     * 회원 탈퇴
+     * 인증코드 생성
      */
-    public void withdrawUser(String username, String token) {
-        log.info("[회원 탈퇴 요청] 사용자: {}", Util.maskEmail(username));
-        // access token 블랙리스트 등록 & refresh token 삭제
-        tokenService.destroyToken(username, token);
-        // 디비에서 user 정보 삭제
-        usersRepository.deleteByEmail(username);
-        log.info("[회원 탈퇴 완료] 사용자: {}", Util.maskEmail(username));
+    private String generateAuthCode() {
+        SecureRandom secureRandom = new SecureRandom();
+        StringBuilder authCode = new StringBuilder();
+
+        for (int i = 0; i < 5; i++) {
+            authCode.append(secureRandom.nextInt(10)); // 0~9 랜덤 숫자 생성
+        }
+
+        return authCode.toString();
     }
 
     /**
@@ -177,16 +179,28 @@ public class UsersService {
     }
 
     /**
-     * 인증코드 생성
+     * 회원 탈퇴 (soft-delete)
      */
-    private String generateAuthCode() {
-        SecureRandom secureRandom = new SecureRandom();
-        StringBuilder authCode = new StringBuilder();
+    public void withdrawUser(String username, String token) {
+        log.info("[회원 탈퇴 요청] 사용자: {}", Util.maskEmail(username));
+        // access token 블랙리스트 등록 & refresh token 삭제
+        tokenService.destroyToken(username, token);
+        Users user = usersRepository.findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND));
+        //유저 상태 변경 & 정보 삭제
+        user.changeUserStatus(UsersStatus.DELETED);
+        user.eraseUserInfo();
+    }
 
-        for (int i = 0; i < 5; i++) {
-            authCode.append(secureRandom.nextInt(10)); // 0~9 랜덤 숫자 생성
-        }
-
-        return authCode.toString();
+    /**
+     * 회원 삭제
+     */
+    public void deleteUser(String username, String token) {
+        log.info("[회원 탈퇴 요청] 사용자: {}", Util.maskEmail(username));
+        // access token 블랙리스트 등록 & refresh token 삭제
+        tokenService.destroyToken(username, token);
+        // 디비에서 user 정보 삭제
+        usersRepository.deleteByEmail(username);
+        log.info("[회원 탈퇴 완료] 사용자: {}", Util.maskEmail(username));
     }
 }
