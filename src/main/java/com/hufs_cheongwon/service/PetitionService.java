@@ -49,7 +49,7 @@ public class PetitionService {
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND));
 
         // 사용자의 마지막 청원 작성 시간 확인
-        Optional<Petition> lastPetition = petitionRepository.findTopByIdOrderByCreatedAtDesc(userId);
+        Optional<Petition> lastPetition = petitionRepository.findTopByUsersIdOrderByCreatedAtDesc(userId);
 
         if (lastPetition.isPresent()) {
             LocalDateTime lastPetitionTime = lastPetition.get().getCreatedAt();
