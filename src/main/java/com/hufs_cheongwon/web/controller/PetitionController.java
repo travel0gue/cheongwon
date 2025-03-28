@@ -283,4 +283,13 @@ public class PetitionController {
     public ApiResponse<PetitionStatsDto> getPetitionStats(){
         return ApiResponse.onSuccess(SuccessStatus.PETITION_STATS_RETRIEVED ,petitionStatService.getPetitionStats());
     }
+
+    @PostMapping("/{petition_id}/bookmark")
+    public ApiResponse<PetitionBookmarkResponse> togglePetitionBookmark(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PathVariable("petition_id") Long petitionId
+    ) {
+        return ApiResponse.onSuccess(SuccessStatus.PETITION_BOOKMARKED,
+                petitionService.togglePetitionBookmark(customUserDetails.getUser().getId(), petitionId));
+    }
 }

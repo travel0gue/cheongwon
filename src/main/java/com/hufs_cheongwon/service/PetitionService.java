@@ -8,6 +8,7 @@ import com.hufs_cheongwon.repository.*;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import com.hufs_cheongwon.web.dto.request.PetitionCreateRequest;
 import com.hufs_cheongwon.web.dto.response.AnswerResponse;
+import com.hufs_cheongwon.web.dto.response.PetitionBookmarkResponse;
 import com.hufs_cheongwon.web.dto.response.PetitionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,6 +27,7 @@ public class PetitionService {
     private final UsersRepository usersRepository;
     private final AgreementRepository agreementRepository;
     private final ReportRepository reportRepository;
+    private final PetitionBookmarkRepository petitionBookmarkRepository;
 
     /**
      * 특정 청원 상세 조회 + 조회수 증가
@@ -153,5 +156,30 @@ public class PetitionService {
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.PETITION_NOT_FOUND));
         petitionRepository.deleteById(petitionId);
         return PetitionResponse.from(petition);
+    }
+
+    /**
+     * 청원 북마크 토글
+     */
+    @Transactional
+    public PetitionBookmarkResponse togglePetitionBookmark(Long userId, Long petitionId) {
+        Users users = usersRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND));
+        Petition petition = petitionRepository.findById(petitionId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.PETITION_NOT_FOUND));
+
+        Optional<PetitionBookmark> existingBookmark = petitionBookmarkRepository.findByUserAndPetition(users, petition);
+
+        //북마크가 존재하는지 확인하고 토글 on/off
+        if(existingBookmark.isPresent()) {
+            petition.decreaseBookmarkCount();
+            petitionBookmarkRepository.delete(existingBookmark.get());
+            return PetitionBookmarkResponse.offBookmark(petitionId);
+        } else {
+            petition.increaseBookmarkCount();
+            PetitionBookmark bookmark = new PetitionBookmark(users, petition);
+            petitionBookmarkRepository.save(bookmark);
+            return PetitionBookmarkResponse.onBookmark(bookmark, petitionId);
+        }
     }
 }
