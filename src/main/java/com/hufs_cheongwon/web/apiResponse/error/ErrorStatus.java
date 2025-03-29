@@ -46,6 +46,7 @@ public enum ErrorStatus {
     SELF_AGREEMENT_NOT_ALLOWED(HttpStatus.BAD_REQUEST, StatusCode.PETITION.getCode(4004), "자신의 청원에는 동의할 수 없습니다."),
     SELF_REPORT_NOT_ALLOWED(HttpStatus.BAD_REQUEST, StatusCode.PETITION.getCode(4005), "자신의 청원에는 신고할 수 없습니다."),
     ALREADY_REPORTED(HttpStatus.CONFLICT, StatusCode.PETITION.getCode(4006), "이미 신고한 청원입니다."),
+    PETITION_TOO_FREQUENT(HttpStatus.CONFLICT, StatusCode.PETITION.getCode(4007), "청원은 7일에 1회만 등록 가능합니다."),
 
     ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, StatusCode.ANSWER.getCode(4001), "해당 답변이 존재하지 않습니다."),
     ALREADY_ANSWERED(HttpStatus.NOT_FOUND, StatusCode.ANSWER.getCode(4002), "이미 답변된 청원입니다."),
