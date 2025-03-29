@@ -54,13 +54,27 @@ public class UsersService {
             throw new ResourceNotFoundException(ErrorStatus.EMAIL_UNCERTIFIED);
         }
         System.out.println(tokenEmail+email);
+
         // 존재하는 이메일인지 확인
-        Boolean isExist = usersRepository.existsByEmail(email);
-        if (isExist){
-            log.warn("[회원가입 실패] 중복된 이메일: {}", Util.maskEmail(email));
-            throw new DuplicateResourceException(ErrorStatus.EMAIL_DUPLICATED);
+        Users existingUser = usersRepository.findByEmail(email).orElse(null);
+        if (existingUser != null){
+            if (existingUser.getUsersStatus() == UsersStatus.INACTIVE) {
+                // 기존 비활성 유저: 정보 갱신 + 상태 복구
+                existingUser.setEncodedPassword(bCryptPasswordEncoder.encode(password));
+                existingUser.changeUserStatus(UsersStatus.ACTIVE);
+                log.info("[회원 재가입] 기존 INACTIVE 사용자 상태 복원 - email={}", Util.maskEmail(email));
+                return AuthInfoResponse.builder()
+                        .userId(existingUser.getId())
+                        .role(existingUser.getRole())
+                        .email(existingUser.getEmail())
+                        .build();
+            } else {
+                //ACTIVE 중복 에러
+                throw new DuplicateResourceException(ErrorStatus.EMAIL_DUPLICATED);
+            }
         }
 
+        // 새로운 유저
         Users newUser = Users.builder()
                 .email(email)
                 .usersStatus(UsersStatus.ACTIVE)
@@ -187,9 +201,9 @@ public class UsersService {
         tokenService.destroyToken(username, token);
         Users user = usersRepository.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND));
-        //유저 상태 변경 & 정보 삭제
-        user.changeUserStatus(UsersStatus.DELETED);
-        user.eraseUserInfo();
+        //유저 상태 변경
+        user.changeUserStatus(UsersStatus.INACTIVE);
+        user.setInactiveAt();
     }
 
     /**

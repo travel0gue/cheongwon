@@ -37,6 +37,9 @@ public class Users extends BaseTimeEntity {
     private String studentNumber;
 
     @Column
+    private LocalDateTime inactiveAt;
+
+    @Column
     private LocalDateTime deleteAt;
 
     @Column
@@ -94,6 +97,10 @@ public class Users extends BaseTimeEntity {
     // 회원 상태 변경
     public void changeUserStatus(UsersStatus status){
         this.usersStatus = status;
+    }
+
+    public void setInactiveAt() {
+        this.inactiveAt = LocalDateTime.now();
     }
 
     // 회원 정보 지우기

@@ -34,7 +34,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                     return new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND);
                 });
 
-        if (user.getUsersStatus() == UsersStatus.DELETED) {
+        // 탈퇴한 사용자라면 예외 던지기
+        if (user.getUsersStatus() != UsersStatus.ACTIVE) {
             throw new InvalidStateException(ErrorStatus.WITHDRAWN_USER);
         }
         return CustomUserDetails.from(user);
