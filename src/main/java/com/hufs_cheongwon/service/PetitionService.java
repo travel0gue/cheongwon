@@ -11,6 +11,8 @@ import com.hufs_cheongwon.web.dto.response.AnswerResponse;
 import com.hufs_cheongwon.web.dto.response.PetitionBookmarkResponse;
 import com.hufs_cheongwon.web.dto.response.PetitionResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -168,7 +170,7 @@ public class PetitionService {
         Petition petition = petitionRepository.findById(petitionId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.PETITION_NOT_FOUND));
 
-        Optional<PetitionBookmark> existingBookmark = petitionBookmarkRepository.findByUserAndPetition(users, petition);
+        Optional<PetitionBookmark> existingBookmark = petitionBookmarkRepository.findByUsersAndPetition(users, petition);
 
         //북마크가 존재하는지 확인하고 토글 on/off
         if(existingBookmark.isPresent()) {
@@ -181,5 +183,13 @@ public class PetitionService {
             petitionBookmarkRepository.save(bookmark);
             return PetitionBookmarkResponse.onBookmark(bookmark, petitionId);
         }
+    }
+
+    /**
+     * 북마크한 청원 조회
+     */
+    public Page<PetitionResponse> getBookmarkedPetitions(Users user, Pageable pageable) {
+        Page<PetitionBookmark> bookmarks = petitionBookmarkRepository.findAllByUsersOrderByPetitionCreatedAtDesc(user, pageable);
+        return bookmarks.map(bookmark -> PetitionResponse.from(bookmark.getPetition()));
     }
 }
