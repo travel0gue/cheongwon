@@ -54,13 +54,12 @@ public class UsersService {
             log.warn("[회원가입 실패] 이메일 불일치 - tokenEmail={}, requestEmail={}", Util.maskEmail(tokenEmail), Util.maskEmail(email));
             throw new ResourceNotFoundException(ErrorStatus.EMAIL_UNCERTIFIED);
         }
-        System.out.println(tokenEmail+email);
 
         // 존재하는 이메일인지 확인
         Users existingUser = usersRepository.findByEmail(email).orElse(null);
         if (existingUser != null){
+            // 기존 비활성 유저: 정보 갱신 + 상태 복구
             if (existingUser.getUsersStatus() == UsersStatus.INACTIVE) {
-                // 기존 비활성 유저: 정보 갱신 + 상태 복구
                 existingUser.setEncodedPassword(bCryptPasswordEncoder.encode(password));
                 existingUser.changeUserStatus(UsersStatus.ACTIVE);
                 log.info("[회원 재가입] 기존 INACTIVE 사용자 상태 복원 - email={}", Util.maskEmail(email));
@@ -69,10 +68,9 @@ public class UsersService {
                         .role(existingUser.getRole())
                         .email(existingUser.getEmail())
                         .build();
-            } else {
-                //ACTIVE 중복 에러
-                throw new DuplicateResourceException(ErrorStatus.EMAIL_DUPLICATED);
             }
+            // ACTIVE 중복 에러
+            throw new DuplicateResourceException(ErrorStatus.EMAIL_DUPLICATED);
         }
 
         // 새로운 유저
