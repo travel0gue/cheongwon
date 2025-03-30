@@ -59,6 +59,9 @@ public class Users extends BaseTimeEntity {
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
     private RefreshToken refreshToken;
 
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    private List<PetitionBookmark> petitionBookmarks = new ArrayList<>();
+
     @Builder
     public Users(String email, String password, String name, String studentNumber) {
         this.email = email;
@@ -87,8 +90,8 @@ public class Users extends BaseTimeEntity {
         this.password = password;
     }
 
-    public String getRole() {
-        return "ROLE_USER";
+    public void addBookmark(PetitionBookmark petitionBookmark) {
+        this.petitionBookmarks.add(petitionBookmark);
     }
 
     /**
@@ -97,6 +100,9 @@ public class Users extends BaseTimeEntity {
     // 회원 상태 변경
     public void changeUserStatus(UsersStatus status){
         this.usersStatus = status;
+    }
+    public String getRole() {
+        return "ROLE_USER";
     }
 
     public void setInactiveAt() {
