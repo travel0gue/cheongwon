@@ -177,12 +177,11 @@ public class PetitionService {
             petition.decreaseBookmarkCount();
             petitionBookmarkRepository.delete(existingBookmark.get());
             return PetitionBookmarkResponse.offBookmark(petitionId);
-        } else {
-            petition.increaseBookmarkCount();
-            PetitionBookmark bookmark = new PetitionBookmark(users, petition);
-            petitionBookmarkRepository.save(bookmark);
-            return PetitionBookmarkResponse.onBookmark(bookmark, petitionId);
         }
+        petition.increaseBookmarkCount();
+        PetitionBookmark bookmark = new PetitionBookmark(users, petition);
+        petitionBookmarkRepository.save(bookmark);
+        return PetitionBookmarkResponse.onBookmark(bookmark, petitionId);
     }
 
     /**
