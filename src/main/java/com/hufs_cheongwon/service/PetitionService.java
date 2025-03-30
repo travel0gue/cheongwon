@@ -1,5 +1,6 @@
 package com.hufs_cheongwon.service;
 
+import com.hufs_cheongwon.common.exception.BusinessException;
 import com.hufs_cheongwon.common.exception.InvalidStateException;
 import com.hufs_cheongwon.common.exception.ResourceNotFoundException;
 import com.hufs_cheongwon.domain.*;
@@ -7,18 +8,16 @@ import com.hufs_cheongwon.domain.enums.PetitionStatus;
 import com.hufs_cheongwon.repository.*;
 import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import com.hufs_cheongwon.web.dto.request.PetitionCreateRequest;
-import com.hufs_cheongwon.web.dto.response.AnswerResponse;
 import com.hufs_cheongwon.web.dto.response.PetitionBookmarkResponse;
 import com.hufs_cheongwon.web.dto.response.PetitionResponse;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -51,6 +50,19 @@ public class PetitionService {
     public Petition createPetition(PetitionCreateRequest petitionRequest, Long userId) {
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND));
+
+        // 사용자의 마지막 청원 작성 시간 확인
+        Optional<Petition> lastPetition = petitionRepository.findTopByUsersIdOrderByCreatedAtDesc(userId);
+
+        if (lastPetition.isPresent()) {
+            LocalDateTime lastPetitionTime = lastPetition.get().getCreatedAt();
+            LocalDateTime currentTime = LocalDateTime.now();
+
+            // 마지막 청원 후 7일이 지나지 않았다면 예외 발생
+            if (ChronoUnit.DAYS.between(lastPetitionTime, currentTime) < 7) {
+                throw new BusinessException(ErrorStatus.PETITION_TOO_FREQUENT);
+            }
+        }
 
         Petition petition = Petition.builder()
                 .user(user)
