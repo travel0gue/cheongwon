@@ -53,8 +53,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/admin/login","/admin/pwd","/user/test","/user/pwd/update").permitAll()
-                        .requestMatchers("/petitions/{petition_id}/agree", "/petitions/{petition_id}/report", "/petitions/bookmark",
-                                "/petitions/new", "/user/logout", "/user/delete").hasRole("USER")
+                        .requestMatchers("/petitions/{petition_id}/agree", "/petitions/{petition_id}/report", "/petitions/new", "/petitions/{petition_id}/bookmark", "/petitions/bookmark",
+                                "/user/logout", "/user/delete", "/user/withdraw").hasRole("USER")
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER")
                         .requestMatchers("/super/**").hasRole("SUPER")
                         .anyRequest().permitAll())

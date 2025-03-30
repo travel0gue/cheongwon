@@ -3,6 +3,7 @@ package com.hufs_cheongwon.domain;
 import com.hufs_cheongwon.domain.enums.UsersStatus;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -34,6 +35,12 @@ public class Users extends BaseTimeEntity {
 
     @Column
     private String studentNumber;
+
+    @Column
+    private LocalDateTime inactiveAt;
+
+    @Column
+    private LocalDateTime deleteAt;
 
     @Column
     @Setter
@@ -90,10 +97,24 @@ public class Users extends BaseTimeEntity {
     /**
      * 비즈니스 메소드
      */
+    // 회원 상태 변경
     public void changeUserStatus(UsersStatus status){
         this.usersStatus = status;
     }
     public String getRole() {
         return "ROLE_USER";
+    }
+
+    public void setInactiveAt() {
+        this.inactiveAt = LocalDateTime.now();
+    }
+
+    // 회원 정보 지우기
+    public void eraseUserInfo() {
+        this.email = "unknown";
+        this.password = "DELETED_USER_PASSWORD";
+        this.name = null;
+        this.studentNumber = null;
+        this.deleteAt = LocalDateTime.now();
     }
 }
