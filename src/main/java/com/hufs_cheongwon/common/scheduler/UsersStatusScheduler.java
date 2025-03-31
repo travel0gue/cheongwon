@@ -27,12 +27,12 @@ public class UsersStatusScheduler {
         log.info("Withdrawn user info erase job started at: {}", LocalDateTime.now());
 
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(Constant.USER_WITHDRAW_DATE);
-        List<Users> targetUsers = usersRepository.findAllByUsersStatusAndInactiveAtBefore(
+        List<Users> targetUsers = usersRepository.findAllByStatusAndInactiveAtBefore(
                 UsersStatus.INACTIVE, cutoffDate);
 
         for (Users user : targetUsers) {
             user.eraseUserInfo();
-            user.changeUserStatus(UsersStatus.DELETED);
+            user.changeStatus(UsersStatus.DELETED);
             log.info("탈퇴 30일 경과 유저 정보 삭제: email(before)={}", Util.maskEmail(user.getEmail()));
         }
 

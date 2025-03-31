@@ -17,5 +17,5 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
     void deleteByEmail(String email);
 
     // usersStatus == INACTIVE && inactiveAt < 30일 전
-    List<Users> findAllByUsersStatusAndInactiveAtBefore(UsersStatus usersStatus, LocalDateTime cutoffDate);
+    List<Users> findAllByStatusAndInactiveAtBefore(UsersStatus usersStatus, LocalDateTime cutoffDate);
 }
