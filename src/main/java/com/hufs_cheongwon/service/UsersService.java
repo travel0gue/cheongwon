@@ -59,9 +59,9 @@ public class UsersService {
         Users existingUser = usersRepository.findByEmail(email).orElse(null);
         if (existingUser != null){
             // 기존 비활성 유저: 정보 갱신 + 상태 복구
-            if (existingUser.getUsersStatus() == UsersStatus.INACTIVE) {
+            if (existingUser.getStatus() == UsersStatus.INACTIVE) {
                 existingUser.setEncodedPassword(bCryptPasswordEncoder.encode(password));
-                existingUser.changeUserStatus(UsersStatus.ACTIVE);
+                existingUser.changeStatus(UsersStatus.ACTIVE);
                 log.info("[회원 재가입] 기존 INACTIVE 사용자 상태 복원 - email={}", Util.maskEmail(email));
                 return AuthInfoResponse.builder()
                         .userId(existingUser.getId())
@@ -76,7 +76,7 @@ public class UsersService {
         // 새로운 유저
         Users newUser = Users.builder()
                 .email(email)
-                .usersStatus(UsersStatus.ACTIVE)
+                .status(UsersStatus.ACTIVE)
                 .build();
         newUser.setEncodedPassword(bCryptPasswordEncoder.encode(password));
         Users user = usersRepository.save(newUser);
@@ -186,7 +186,7 @@ public class UsersService {
                 });
 
         // 탈퇴한 사용자인지 확인
-        if (user.getUsersStatus() != UsersStatus.ACTIVE) {
+        if (user.getStatus() != UsersStatus.ACTIVE) {
             log.warn("[비밀번호 변경 실패] 탈퇴한 사용자: {}", Util.maskEmail(email));
             throw new InvalidStateException(ErrorStatus.WITHDRAWN_USER);
         }
@@ -210,7 +210,7 @@ public class UsersService {
         Users user = usersRepository.findByEmail(username)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND));
         //유저 상태 변경
-        user.changeUserStatus(UsersStatus.INACTIVE);
+        user.changeStatus(UsersStatus.INACTIVE);
         user.setInactiveAt();
     }
 

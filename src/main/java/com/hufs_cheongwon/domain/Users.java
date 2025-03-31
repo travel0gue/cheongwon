@@ -45,7 +45,7 @@ public class Users extends BaseTimeEntity {
     @Column
     @Setter
     @Enumerated(EnumType.STRING)
-    private UsersStatus usersStatus;
+    private UsersStatus status;
 
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Petition> petitions = new ArrayList<>();
@@ -68,7 +68,7 @@ public class Users extends BaseTimeEntity {
         this.password = password;
         this.name = name;
         this.studentNumber = studentNumber;
-        this.usersStatus = UsersStatus.ACTIVE;
+        this.status = UsersStatus.ACTIVE;
     }
 
     /**
@@ -98,8 +98,8 @@ public class Users extends BaseTimeEntity {
      * 비즈니스 메소드
      */
     // 회원 상태 변경
-    public void changeUserStatus(UsersStatus status){
-        this.usersStatus = status;
+    public void changeStatus(UsersStatus status){
+        this.status = status;
     }
     public String getRole() {
         return "ROLE_USER";
