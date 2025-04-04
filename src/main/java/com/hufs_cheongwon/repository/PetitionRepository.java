@@ -1,6 +1,7 @@
 package com.hufs_cheongwon.repository;
 
 import com.hufs_cheongwon.domain.Petition;
+import com.hufs_cheongwon.domain.Users;
 import com.hufs_cheongwon.domain.enums.PetitionStatus;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +23,8 @@ public interface PetitionRepository extends JpaRepository<Petition, Long> {
     Page<Petition> findByPetitionStatusOrderByCreatedAtDesc(PetitionStatus status, Pageable pageable);
 
     Page<Petition> findByPetitionStatusOrderByAgreeCountDesc(PetitionStatus status, Pageable pageable);
+
+    Page<Petition> findByUsers(Users user, Pageable pageable);
 
     /**
      * 진행중인 청원 가져오기
@@ -97,7 +100,13 @@ public interface PetitionRepository extends JpaRepository<Petition, Long> {
     Optional<Petition> findPetitionByResponseId(@Param("responseId") Long responseId);
 
     /**
-     * 특정 사용자가 작성한 청원 중 가장 최근에 작성된 청원 하나를 조회합니다
+     * 특정 사용자가 작성한 청원 중 가장 최근에 작성된 청원 하나를 조회
      */
     Optional<Petition> findTopByUsersIdOrderByCreatedAtDesc(Long userId);
+
+    /**
+     * 특정 사용자가 동의한 청원 조회
+     */
+    @Query("SELECT a.petition FROM Agreement a WHERE a.users.id = :userId")
+    Page<Petition> findPetitionsByUserAgreements(@Param("userId") Long userId, Pageable pageable);
 }
