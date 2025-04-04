@@ -10,6 +10,7 @@ import com.hufs_cheongwon.web.apiResponse.error.ErrorStatus;
 import com.hufs_cheongwon.web.dto.request.PetitionCreateRequest;
 import com.hufs_cheongwon.web.dto.response.PetitionBookmarkResponse;
 import com.hufs_cheongwon.web.dto.response.PetitionResponse;
+import com.hufs_cheongwon.web.dto.response.UserPetitionsResponse;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -202,5 +203,22 @@ public class PetitionService {
     public Page<PetitionResponse> getBookmarkedPetitions(Users user, Pageable pageable) {
         Page<PetitionBookmark> bookmarks = petitionBookmarkRepository.findAllByUsersOrderByPetitionCreatedAtDesc(user, pageable);
         return bookmarks.map(bookmark -> PetitionResponse.from(bookmark.getPetition()));
+    }
+
+    /**
+     * 사용자가 작성한 청원과 동의한 청원을 함께 조회
+     */
+    public UserPetitionsResponse findUserPetitionActivities(Long userId, Pageable pageable) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND));
+
+        Page<Petition> writtenPetitions = petitionRepository.findByUsers(user, pageable);
+
+        Page<Petition> agreedPetitions = petitionRepository.findPetitionsByUserAgreements(userId, pageable);
+
+        return UserPetitionsResponse.builder()
+                .writtenPetitions(writtenPetitions.map(PetitionResponse::from))
+                .agreedPetitions(agreedPetitions.map(PetitionResponse::from))
+                .build();
     }
 }

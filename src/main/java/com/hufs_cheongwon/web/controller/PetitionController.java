@@ -303,4 +303,18 @@ public class PetitionController {
         Page<PetitionResponse> responses = petitionService.getBookmarkedPetitions(customUserDetails.getUser(), pageable);
         return ApiResponse.onSuccess(SuccessStatus.PETITION_BOOKMARKS_RETRIEVED, responses);
     }
+
+    /**
+     * 사용자가 작성한 청원과 동의한 청원을 한 번에 조회
+     */
+    @GetMapping("/my-activities")
+    public ApiResponse<UserPetitionsResponse> getUserPetitionActivities(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(name = "page",defaultValue = "0") int page,
+            @RequestParam(name = "size",defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        UserPetitionsResponse response = petitionService.findUserPetitionActivities(customUserDetails.getUser().getId(), pageable);
+        return ApiResponse.onSuccess(SuccessStatus.USER_INFO_RETRIEVED, response);
+    }
 }
