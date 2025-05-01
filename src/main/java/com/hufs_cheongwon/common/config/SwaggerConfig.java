@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
         servers = {
                 @Server(url = "http://localhost:8080", description = "local 서버"),
                 @Server(url = "https://sinmungo.shop", description = "개발 서버"),
-                @Server(url = "https://api.petition.hufs.ac.kr", description = "배포 서버")
+                @Server(url = "https://api.sinmungo.hufs.ac.kr", description = "배포 서버")
         }
 )
 public class SwaggerConfig {
