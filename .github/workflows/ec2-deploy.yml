@@ -1,25 +1,23 @@
 name: Deploy to AWS EC2
-
 on:
   push:
     branches:
       - main
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       # 코드 체크아웃
       - name: Checkout code
         uses: actions/checkout@v3
+      
       # JDK 설정
       - name: JDK 21 설정
         uses: actions/setup-java@v3
         with:
           java-version: '21'
           distribution: 'temurin'
-
+      
       - name: Gradle 권한 부여
         run: chmod +x ./gradlew
         
@@ -33,29 +31,77 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       
+      # application.yml 파일 생성
+      - name: application.yml 생성
+        run: |
+          mkdir -p src/main/resources
+          cat > src/main/resources/application.yml << EOF
+          spring:
+            datasource:
+              url: ${{ secrets.DB_URL_PROD }}
+              username: ${{ secrets.DB_USERNAME }}
+              password: ${{ secrets.DB_PASSWORD }}
+              driver-class-name: com.mysql.cj.jdbc.Driver
+              hikari:
+                connection-timeout: 60000
+                maximum-pool-size: 5
+                minimum-idle: 2
+                idle-timeout: 300000
+                max-lifetime: 1200000
+                connection-test-query: SELECT 1
+            jpa:
+              hibernate:
+                ddl-auto: update
+              properties:
+                hibernate:
+                  format_sql: false
+            mail:
+              host: smtp.gmail.com
+              port: 587
+              username: ${{ secrets.MAIL_USERNAME }}
+              password: ${{ secrets.MAIL_PASSWORD }}
+              properties:
+                mail:
+                  smtp:
+                    auth: true
+                    starttls:
+                      enable: true
+          logging.level:
+            org.hibernate.SQL: debug
+            org.hibernate.orm.jdbc.bind: trace
+          jwt:
+            secret: ${{ secrets.JWT_SECRET }}
+            accessExpiration: 3600000
+            refreshExpiration: 604800000
+            emailExpiration: 600000
+          pepper:
+            secret: ${{ secrets.PEPPER_SECRET }}
+          EOF
+      
       - name: Build JAR
         run: ./gradlew clean build
-
+      
       - name: Configure SSH Key
         env:
           PEM_KEY: ${{ secrets.AWS_PEM_KEY }}
         run: |
+          mkdir -p ~/.ssh
           echo "$PEM_KEY" > ~/.ssh/aws_key.pem
           chmod 600 ~/.ssh/aws_key.pem
-
+      
       - name: Add EC2 to Known Hosts
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           ssh-keyscan $EC2_HOST >> ~/.ssh/known_hosts
-
+      
       - name: Transfer JAR to EC2
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           scp -i ~/.ssh/aws_key.pem ./build/libs/hufs_cheongwon-0.0.1-SNAPSHOT.jar $EC2_USER@$EC2_HOST:/home/$EC2_USER/app/
-
+      
       - name: Restart Application on EC2
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
@@ -69,7 +115,7 @@ jobs:
               sudo kill -9 \$PID
               echo "Killed process \$PID"
             fi
-
             echo "Starting new application..."
             nohup java -jar -Dspring.profiles.active=prod -Duser.timezone=Asia/Seoul hufs_cheongwon-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
             echo "Application started successfully."
+          EOF
