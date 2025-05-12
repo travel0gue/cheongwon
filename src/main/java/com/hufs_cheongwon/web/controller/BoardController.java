@@ -108,6 +108,25 @@ public class BoardController {
         return ApiResponse.onSuccess(BoardResponse.from(updatedBoard, type));
     }
 
+    /**
+     * 게시글 삭제
+     */
+    @DeleteMapping("/{type}/{board_id}")
+    public ApiResponse<Void> deleteBoard(
+            @PathVariable(name = "type") BoardType type,
+            @PathVariable(name = "board_id") Long id
+    ) {
+        Board board = boardRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.BOARD_NOT_FOUND));
+
+        if (!board.getBoardType().equals(type)) {
+            throw new InvalidStateException(ErrorStatus.INVALID_BOARD_TYPE);
+        }
+
+        boardRepository.deleteById(id);
+
+        return ApiResponse.onSuccess(SuccessStatus._OK, null);
+    }
+
     private void checkKey(String key) {
         if (key == null || key.trim().isEmpty()) {
             throw new InvalidStateException(ErrorStatus.KEY_WRONG);

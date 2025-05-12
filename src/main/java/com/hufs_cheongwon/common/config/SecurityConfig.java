@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -58,6 +59,9 @@ public class SecurityConfig {
                                 "/user/logout", "/user/delete", "/user/withdraw").hasRole("USER")
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER")
                         .requestMatchers("/super/**").hasRole("SUPER")
+                        .requestMatchers(HttpMethod.POST, "/boards/**").hasRole("SUPER")
+                        .requestMatchers(HttpMethod.PUT, "/boards/**").hasRole("SUPER")
+                        .requestMatchers(HttpMethod.DELETE, "/boards/**").hasRole("SUPER")
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptions -> exceptions
