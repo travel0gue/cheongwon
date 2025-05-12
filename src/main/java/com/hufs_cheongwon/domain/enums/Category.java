@@ -1,8 +1,12 @@
 package com.hufs_cheongwon.domain.enums;
 
 public enum Category {
-    ALL("전체"),
-    EDUCATION("교육")
+    ACADEMIC("학사/교육"),
+    WELFARE("행정/복지"),
+    IT_SERVICE("IT/정보 서비스"),
+    ACTIVITIES("학생 활동"),
+    CAREER("취업/진로"),
+    OTHERS("기타")
     ;
 
     private final String displayName;
