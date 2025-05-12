@@ -1,5 +1,6 @@
 package com.hufs_cheongwon.web.dto.response;
 
+import com.hufs_cheongwon.common.Util;
 import com.hufs_cheongwon.domain.Agreement;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -24,7 +25,7 @@ public class AgreementResponse {
                 .agreementId(agreement.getId())
                 .petitionId(agreement.getPetition().getId())
                 .agreementUserId(agreement.getUsers().getId())
-                .agreementUserEmail(agreement.getUsers().getEmail())
+                .agreementUserEmail(Util.maskEmail(agreement.getUsers().getEmail()))
                 .createdAt(agreement.getCreatedAt())
                 .build();
     }

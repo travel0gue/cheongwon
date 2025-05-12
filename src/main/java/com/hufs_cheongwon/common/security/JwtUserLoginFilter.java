@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,6 +38,7 @@ public class JwtUserLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
     private final TokenService tokenService;
+    @Value("${pepper.secret}") private String pepperSecret;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -47,7 +49,7 @@ public class JwtUserLoginFilter extends UsernamePasswordAuthenticationFilter {
             log.info("[Authentication] 사용자 로그인 필터 - 이메일: {}", Util.maskEmail(loginRequest.getEmail()));
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    loginRequest.getEmail(), loginRequest.getPassword(), null);
+                    loginRequest.getEmail(), loginRequest.getPassword()+pepperSecret, null);
 
             //authenticationManager가 이메일, 비밀번호로 검증을 진행
             return authenticationManager.authenticate(authToken);

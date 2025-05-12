@@ -15,6 +15,7 @@ import com.hufs_cheongwon.web.dto.response.AuthInfoResponse;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -39,6 +40,7 @@ public class UsersService {
     private final JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
     private final CacheService cacheService;
+    @Value("${pepper.secret}") private String pepperSecret;
 
     /**
      * 회원가입
@@ -78,7 +80,8 @@ public class UsersService {
                 .email(email)
                 .status(UsersStatus.ACTIVE)
                 .build();
-        newUser.setEncodedPassword(bCryptPasswordEncoder.encode(password));
+
+        newUser.setEncodedPassword(bCryptPasswordEncoder.encode(password+pepperSecret));
         Users user = usersRepository.save(newUser);
 
         log.info("[회원가입 성공] userId={}, email={}", user.getId(), Util.maskEmail(user.getEmail()));
