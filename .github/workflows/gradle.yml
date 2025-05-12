@@ -83,6 +83,8 @@ jobs:
           accessExpiration: 3600000
           refreshExpiration: 604800000
           emailExpiration: 600000
+        pepper:
+          secret: ${{ secrets.PEPPER_SECRET }}
         EOF
     
     # Gradle로 빌드 검증
