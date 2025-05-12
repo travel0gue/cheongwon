@@ -57,7 +57,7 @@ public class SecurityConfig {
                         .requestMatchers("/petitions/{petition_id}/agree", "/petitions/{petition_id}/report", "/petitions/new", "/petitions/{petition_id}/bookmark", "/petitions/bookmark",
                                 "/user/logout", "/user/delete", "/user/withdraw").hasRole("USER")
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER")
-                        .requestMatchers("/super/**").hasRole("SUPER")
+                        .requestMatchers("/super/**", "/boards/**").hasRole("SUPER")
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptions -> exceptions
