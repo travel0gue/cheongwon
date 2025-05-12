@@ -84,7 +84,7 @@ jobs:
           refreshExpiration: 604800000
           emailExpiration: 600000
         pepper:
-          secret: uPEu>=@etH{9n-d^WkitzVK/a]|~h(W
+          secret: ${{ secrets.PEPPER_SECRET }}
         EOF
     
     # Gradle로 빌드 검증
