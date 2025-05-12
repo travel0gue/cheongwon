@@ -108,7 +108,6 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           ssh -i ~/.ssh/aws_key.pem $EC2_USER@$EC2_HOST <<EOF
-          cd /home/$EC2_USER/app
           echo "애플리케이션 배포 스크립트 실행 중..."
           ./deploy.sh
           EOF
