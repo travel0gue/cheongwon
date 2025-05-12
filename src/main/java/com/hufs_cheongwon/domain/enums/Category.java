@@ -6,7 +6,7 @@ public enum Category {
     IT_SERVICE("IT/정보 서비스"),
     ACTIVITIES("학생 활동"),
     CAREER("취업/진로"),
-    OTHERS("기타")
+    GUITAR("기타")
     ;
 
     private final String displayName;
