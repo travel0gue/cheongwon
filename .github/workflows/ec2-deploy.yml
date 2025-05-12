@@ -101,40 +101,14 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           scp -i ~/.ssh/aws_key.pem ./build/libs/hufs_cheongwon-0.0.1-SNAPSHOT.jar $EC2_USER@$EC2_HOST:/home/$EC2_USER/app/
-      
+
       - name: Restart Application on EC2
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           ssh -i ~/.ssh/aws_key.pem $EC2_USER@$EC2_HOST <<EOF
-            cd /home/$EC2_USER/app
-            echo "Killing existing application..."
-            PID=\$(ss -tulnp | grep 8080 | awk '{print \$6}' | cut -d',' -f2)
-            if [ -n "\$PID" ]; then
-              sudo kill -9 \$PID
-              echo "Killed process \$PID"
-            fi
-            echo "Starting new application..."
-            nohup java -jar \
-              -XX:+ShowCodeDetailsInExceptionMessages \
-              -Dspring.profiles.active=prod \
-              -Duser.timezone=Asia/Seoul \
-              -Dspring.web.resources.add-mappings=true \
-              -Dserver.tomcat.additional-tld-skip-patterns="*.jar" \
-              hufs_cheongwon-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
-            # 애플리케이션 시작 확인을 위해 잠시 대기
-            sleep 5
-            
-            # 로그 확인
-            echo "===== 최근 로그 확인 ====="
-            tail -n 20 app.log
-            
-            # 프로세스가 실행 중인지 확인
-            if pgrep -f "hufs_cheongwon-0.0.1-SNAPSHOT.jar"; then
-              echo "애플리케이션이 성공적으로 시작되었습니다."
-            else
-              echo "애플리케이션 시작 실패! 로그를 확인하세요."
-              exit 1
-            fi
+          cd /home/$EC2_USER/app
+          echo "애플리케이션 배포 스크립트 실행 중..."
+          ./deploy.sh
           EOF
