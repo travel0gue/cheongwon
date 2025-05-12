@@ -1,0 +1,75 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 코드 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v3
+      # JDK 설정
+      - name: JDK 21 설정
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Gradle 권한 부여
+        run: chmod +x ./gradlew
+        
+      - name: Gradle 캐싱
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      
+      - name: Build JAR
+        run: ./gradlew clean build
+
+      - name: Configure SSH Key
+        env:
+          PEM_KEY: ${{ secrets.AWS_PEM_KEY }}
+        run: |
+          echo "$PEM_KEY" > ~/.ssh/aws_key.pem
+          chmod 600 ~/.ssh/aws_key.pem
+
+      - name: Add EC2 to Known Hosts
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          ssh-keyscan $EC2_HOST >> ~/.ssh/known_hosts
+
+      - name: Transfer JAR to EC2
+        env:
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          scp -i ~/.ssh/aws_key.pem ./build/libs/hufs_cheongwon-0.0.1-SNAPSHOT.jar $EC2_USER@$EC2_HOST:/home/$EC2_USER/app/
+
+      - name: Restart Application on EC2
+        env:
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          ssh -i ~/.ssh/aws_key.pem $EC2_USER@$EC2_HOST <<EOF
+            cd /home/$EC2_USER/app
+            echo "Killing existing application..."
+            PID=\$(ss -tulnp | grep 8080 | awk '{print \$6}' | cut -d',' -f2)
+            if [ -n "\$PID" ]; then
+              sudo kill -9 \$PID
+              echo "Killed process \$PID"
+            fi
+
+            echo "Starting new application..."
+            nohup java -jar -Dspring.profiles.active=prod -Duser.timezone=Asia/Seoul hufs_cheongwon-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+            echo "Application started successfully."
