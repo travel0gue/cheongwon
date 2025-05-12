@@ -1,0 +1,90 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Java CI with Gradle
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-verification:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 코드 체크아웃
+    - uses: actions/checkout@v3
+    
+    # JDK 21 설정
+    - name: JDK 21 설정
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+    
+    # Gradle 캐싱 (빌드 속도 향상)
+    - name: Gradle 캐싱
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    
+    # Gradle 권한 부여
+    - name: Gradle 권한 부여
+      run: chmod +x ./gradlew
+    
+    # 테스트용 application.yml 생성 (개발 환경용)
+    - name: 테스트용 application.yml 생성
+      run: |
+        cat > src/main/resources/application.yml << EOF
+        spring:
+          datasource:
+            url: ${{ secrets.DB_URL_PROD }}
+            username: ${{ secrets.DB_USERNAME }}
+            password: ${{ secrets.DB_PASSWORD }}
+            driver-class-name: com.mysql.cj.jdbc.Driver
+            hikari:
+              connection-timeout: 60000
+              maximum-pool-size: 5
+              minimum-idle: 2
+              idle-timeout: 300000
+              max-lifetime: 1200000
+              connection-test-query: SELECT 1
+          jpa:
+            hibernate:
+              ddl-auto: validate
+            properties:
+              hibernate:
+                format_sql: false
+          mail:
+            host: smtp.gmail.com
+            port: 587
+            username: ${{ secrets.MAIL_USERNAME }}
+            password: ${{ secrets.MAIL_PASSWORD }}
+            properties:
+              mail:
+                smtp:
+                  auth: true
+                  starttls:
+                    enable: true
+        logging.level:
+          org.hibernate.SQL: debug
+          org.hibernate.orm.jdbc.bind: trace
+        jwt:
+          secret: ${{ secrets.JWT_SECRET }}
+          accessExpiration: 3600000
+          refreshExpiration: 604800000
+          emailExpiration: 600000
+        EOF
+    
+    # Gradle로 빌드 검증
+    - name: Gradle 빌드 검증
+      run: ./gradlew clean build
