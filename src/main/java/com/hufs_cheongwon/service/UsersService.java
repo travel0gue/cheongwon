@@ -62,7 +62,7 @@ public class UsersService {
         if (existingUser != null){
             // 기존 비활성 유저: 정보 갱신 + 상태 복구
             if (existingUser.getStatus() == UsersStatus.INACTIVE) {
-                existingUser.setEncodedPassword(bCryptPasswordEncoder.encode(password));
+                existingUser.setEncodedPassword(bCryptPasswordEncoder.encode(password+pepperSecret));
                 existingUser.changeStatus(UsersStatus.ACTIVE);
                 log.info("[회원 재가입] 기존 INACTIVE 사용자 상태 복원 - email={}", Util.maskEmail(email));
                 return AuthInfoResponse.builder()
@@ -195,7 +195,7 @@ public class UsersService {
         }
 
         // 비밀번호 변경
-        user.setEncodedPassword((bCryptPasswordEncoder.encode(password)));
+        user.setEncodedPassword((bCryptPasswordEncoder.encode(password+pepperSecret)));
         return AuthInfoResponse.builder()
                 .userId(user.getId())
                 .role(user.getRole())
