@@ -38,7 +38,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final AdminRepository adminRepository;
 
     @Override
-
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //TODO: 오류 처리 리팩토링
         try {
