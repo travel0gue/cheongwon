@@ -1,3 +1,7 @@
+# main으로 merge 혹은 main에서 코드 변경 시 실행
+# docker 이미지 생성 후 docker 허브로 푸쉬하는 workflow
+# 1. create build file 2. docker image build 3. push to docker hub
+
 name: Docker Image CI
 on:
   push:
@@ -34,50 +38,12 @@ jobs:
     
     # application.yml 생성
     - name: application.yml 생성
+      env:
+        YAML_CONTENT: ${{secrets.YAML_PROD}}
       run: |
-        cat > src/main/resources/application.yml << EOF
-        spring:
-          datasource:
-            url: ${{ secrets.DB_URL_PROD }}
-            username: ${{ secrets.DB_USERNAME }}
-            password: ${{ secrets.DB_PASSWORD }}
-            driver-class-name: com.mysql.cj.jdbc.Driver
-            hikari:
-              connection-timeout: 60000
-              maximum-pool-size: 5
-              minimum-idle: 2
-              idle-timeout: 300000
-              max-lifetime: 1200000
-              connection-test-query: SELECT 1
-          jpa:
-            hibernate:
-              ddl-auto: update
-            properties:
-              hibernate:
-                format_sql: false
-          mail:
-            host: smtp.gmail.com
-            port: 587
-            username: ${{ secrets.MAIL_USERNAME }}
-            password: ${{ secrets.MAIL_PASSWORD }}
-            properties:
-              mail:
-                smtp:
-                  auth: true
-                  starttls:
-                    enable: true
-        logging.level:
-          org.hibernate.SQL: debug
-          org.hibernate.orm.jdbc.bind: trace
-        jwt:
-          secret: ${{ secrets.JWT_SECRET }}
-          accessExpiration: 3600000
-          refreshExpiration: 604800000
-          emailExpiration: 600000
-        pepper:
-          secret: ${{ secrets.PEPPER_SECRET }}
-        EOF
-    
+        mkdir -p src/main/resources
+        echo "$YAML_CONTENT" > src/main/resources/application.yml
+
     # Gradle로 빌드 실행
     - name: Gradle 빌드
       run: ./gradlew clean build

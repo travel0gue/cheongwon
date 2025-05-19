@@ -1,3 +1,7 @@
+# main으로 merge 혹은 main에서 코드 변경 시 실행
+# aws ec2로 배포하는 workflow
+# 실제 배포에서 사용되면 yaml 파일은 인스턴스 안에 있는 application-prod.yml (클러스터 문제 해결되면 여기 파일을 dev로 바꿔줘야 함)
+
 name: Deploy to AWS EC2
 on:
   push:
@@ -33,50 +37,11 @@ jobs:
       
       # application.yml 파일 생성
       - name: application.yml 생성
+        env:
+          YAML_CONTENT: ${{secrets.YAML_PROD}}
         run: |
           mkdir -p src/main/resources
-          cat > src/main/resources/application.yml << EOF
-          spring:
-            datasource:
-              url: ${{ secrets.DB_URL_PROD }}
-              username: ${{ secrets.DB_USERNAME }}
-              password: ${{ secrets.DB_PASSWORD }}
-              driver-class-name: com.mysql.cj.jdbc.Driver
-              hikari:
-                connection-timeout: 60000
-                maximum-pool-size: 5
-                minimum-idle: 2
-                idle-timeout: 300000
-                max-lifetime: 1200000
-                connection-test-query: SELECT 1
-            jpa:
-              hibernate:
-                ddl-auto: update
-              properties:
-                hibernate:
-                  format_sql: false
-            mail:
-              host: smtp.gmail.com
-              port: 587
-              username: ${{ secrets.MAIL_USERNAME }}
-              password: ${{ secrets.MAIL_PASSWORD }}
-              properties:
-                mail:
-                  smtp:
-                    auth: true
-                    starttls:
-                      enable: true
-          logging.level:
-            org.hibernate.SQL: debug
-            org.hibernate.orm.jdbc.bind: trace
-          jwt:
-            secret: ${{ secrets.JWT_SECRET }}
-            accessExpiration: 3600000
-            refreshExpiration: 604800000
-            emailExpiration: 600000
-          pepper:
-            secret: ${{ secrets.PEPPER_SECRET }}
-          EOF
+          echo "$YAML_CONTENT" > src/main/resources/application.yml
       
       - name: Build JAR
         run: ./gradlew clean build

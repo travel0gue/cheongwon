@@ -1,10 +1,5 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
-
+# main 브랜치로 pull request가 생겼을 때 실핻
+# 빌드 파일 생성함으로써 빌드 실행 잘 되는지 테스트하는 workflow
 name: Java CI with Gradle
 
 on:
@@ -40,52 +35,14 @@ jobs:
     # Gradle 권한 부여
     - name: Gradle 권한 부여
       run: chmod +x ./gradlew
-    
+
     # 테스트용 application.yml 생성 (개발 환경용)
-    - name: 테스트용 application.yml 생성
+    - name: application.yml 생성
+      env:
+        YAML_CONTENT: ${{secrets.YAML_PROD}}
       run: |
-        cat > src/main/resources/application.yml << EOF
-        spring:
-          datasource:
-            url: ${{ secrets.DB_URL_PROD }}
-            username: ${{ secrets.DB_USERNAME }}
-            password: ${{ secrets.DB_PASSWORD }}
-            driver-class-name: com.mysql.cj.jdbc.Driver
-            hikari:
-              connection-timeout: 60000
-              maximum-pool-size: 5
-              minimum-idle: 2
-              idle-timeout: 300000
-              max-lifetime: 1200000
-              connection-test-query: SELECT 1
-          jpa:
-            hibernate:
-              ddl-auto: validate
-            properties:
-              hibernate:
-                format_sql: false
-          mail:
-            host: smtp.gmail.com
-            port: 587
-            username: ${{ secrets.MAIL_USERNAME }}
-            password: ${{ secrets.MAIL_PASSWORD }}
-            properties:
-              mail:
-                smtp:
-                  auth: true
-                  starttls:
-                    enable: true
-        logging.level:
-          org.hibernate.SQL: debug
-          org.hibernate.orm.jdbc.bind: trace
-        jwt:
-          secret: ${{ secrets.JWT_SECRET }}
-          accessExpiration: 3600000
-          refreshExpiration: 604800000
-          emailExpiration: 600000
-        pepper:
-          secret: ${{ secrets.PEPPER_SECRET }}
-        EOF
+        mkdir -p src/main/resources
+        echo "$YAML_CONTENT" > src/main/resources/application.yml
     
     # Gradle로 빌드 검증
     - name: Gradle 빌드 검증
