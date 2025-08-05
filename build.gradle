@@ -49,6 +49,12 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
     testImplementation 'org.mockito:mockito-core:5.9.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.9.0' // JUnit 5에서 Mockito 사용 시 필요
+    
+    // Spring Security Test
+    testImplementation 'org.springframework.security:spring-security-test'
+    
+    // AssertJ
+    testImplementation 'org.assertj:assertj-core:3.24.2'
 
     // Mysql
     implementation 'com.mysql:mysql-connector-j'
