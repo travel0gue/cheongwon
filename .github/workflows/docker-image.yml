@@ -1,4 +1,4 @@
-# main으로 merge 혹은 main에서 코드 변경 시 실행
+# main으로 merge 혹은 main에서 코드 변경 시 실행 
 # docker 이미지 생성 후 docker 허브로 푸쉬하는 workflow
 # 1. create build file 2. docker image build 3. push to docker hub
 
