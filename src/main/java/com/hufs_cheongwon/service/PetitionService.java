@@ -53,17 +53,17 @@ public class PetitionService {
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorStatus.USER_NOT_FOUND));
 
         // 사용자의 마지막 청원 작성 시간 확인
-        Optional<Petition> lastPetition = petitionRepository.findTopByUsersIdOrderByCreatedAtDesc(userId);
-
-        if (lastPetition.isPresent()) {
-            LocalDateTime lastPetitionTime = lastPetition.get().getCreatedAt();
-            LocalDateTime currentTime = LocalDateTime.now();
-
-            // 마지막 청원 후 7일이 지나지 않았다면 예외 발생
-            if (ChronoUnit.DAYS.between(lastPetitionTime, currentTime) < 7) {
-                throw new BusinessException(ErrorStatus.PETITION_TOO_FREQUENT);
-            }
-        }
+//        Optional<Petition> lastPetition = petitionRepository.findTopByUsersIdOrderByCreatedAtDesc(userId);
+//
+//        if (lastPetition.isPresent()) {
+//            LocalDateTime lastPetitionTime = lastPetition.get().getCreatedAt();
+//            LocalDateTime currentTime = LocalDateTime.now();
+//
+//            // 마지막 청원 후 7일이 지나지 않았다면 예외 발생
+//            if (ChronoUnit.DAYS.between(lastPetitionTime, currentTime) < 7) {
+//                throw new BusinessException(ErrorStatus.PETITION_TOO_FREQUENT);
+//            }
+//        }
 
         Petition petition = Petition.builder()
                 .user(user)
